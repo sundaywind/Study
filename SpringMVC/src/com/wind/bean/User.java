@@ -3,6 +3,8 @@ package com.wind.bean;
 import java.util.Arrays;
 import java.util.List;
 
+import com.wind.bean.Address;
+
 public class User {
 
 	// 云端代码，测试！
