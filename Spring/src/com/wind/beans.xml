@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 
+		分模块开发 ： 配置写配置、
+				   bean配置bean，
+			完后在主加载的配置文件中，import一下。
+	-->
+	
+	<!--  
+		bean标签：加载类在Spring核心容器中。
+			class属性：类的全类名（包名+类名）
+			id属性：唯一标识
+			name属性：相当于id的别名（两个可以一样）
+			scope属性：
+				protoyepe（表示创建一个多利的对象）（不是获取容器的时候创建该对象，而是获取对象（getBean）的时候）
+				request（每次请求都会创建一个对象）
+				session（每个会话创建一个对象）
+				singletion（表示创建一个单利的对象）
+			init-method属性：指定类的初始化方法（直接复制方法名，不要后面小括号）
+			destroy-method属性：同初始化方法。
+	-->
+	<bean id="user01" name="user01" class="com.wind.User" init-method="initMethod" destroy-method="destroyMethod"></bean>
+	
+	<bean class="com.wind.Book">
+		<property name="bookName" value="金瓶梅"></property>	<!-- 基本属性赋值直接用value属性 -->
+		<property name="user" ref="user01"></property>		<!-- 引用类型用ref，会在Spring容器中找ref的值跟id或name值一样的对象 -->
+	</bean>
+	
+	<!-- 静态工厂创建Bean对象：StaticFactory类的getBook方法返回值作为Bean对象 -->
+	<bean id="getBook" class="com.wind.StaticFactory" factory-method="getBook"></bean>
+	
+	<!-- 实例工厂创建Bean对象：先bean出实例工厂，用实例工厂id作为factory-bean，factory-method创建对象的方法  -->
+	<bean id="instanceFactory" class="com.wind.InstanceFactory"></bean>
+	<bean id="instanceGetBook" factory-bean="instanceFactory" factory-method="getBook"></bean>
+	
+</beans>

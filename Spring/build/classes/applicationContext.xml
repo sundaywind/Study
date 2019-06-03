@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- 分模块开发：导入别的xml（spring-beans.xsd后缀） 导入方法是：包名+xml名  -->
+	<import resource="com/wind/beans.xml"/>
+	
+	<!-- 属性注入的四种方式（给类的属性的赋值） -->
+	<!-- set方法注入：走的是类的setter、getter方法  -->
+	<bean id="book01" class="com.wind.Book">
+		<property name="bookName" value="倚天屠龙记"></property>
+		<property name="price" value="66.66"></property>
+		<property name="user" ref="user01"></property>
+	</bean>
+	<!-- 构造器属性注入：输入前几个报错 不用管，因为全参构造器还未写完全
+			index属性：可以指定相同构造器，但参数顺序不同的构造器。（从0开始）
+			 type属性：int是个类型，在java中不是一个类对应的对象类integer对应的位置是java.lang.Integer
+	 -->
+	<bean id="book02" class="com.wind.Book">
+		<constructor-arg name="bookName" value="简爱" index="1"></constructor-arg>
+		<constructor-arg name="price" value="88" index="2" type="java.lang.Integer"></constructor-arg>
+		<constructor-arg name="user" ref="user01" index="0"></constructor-arg>
+	</bean>
+	<!-- P名称空间赋值：必须先在Namespaces导入P名称空间（底层还是走的setter方法）  -->
+	<bean id="book03" class="com.wind.Book" p:bookName="水浒传" p:price="33.33" p:user-ref="user01"></bean>
+	<!-- 
+		Spel表达式：#{...}：
+				基本类型数据：value="#{'jQuery'}"、value="#{7.89}"
+				引用对象数据：value="#{user01}"
+			     引用对象的属性：value=#{user01.userName}
+			     引用对象的方法：value=#{user01.方法名()}
+		  EL表达式：${...}：
+	-->
+	<bean id="book04" class="com.wind.Book">
+		<property name="bookName" value="#{'jQuery'}"></property>
+		<property name="price" value="#{7.89}"></property>
+		<property name="user" value="#{user01}"></property>
+	</bean>
+	
+	<!-- 内部Bean和外部Bean -->
+	<!-- 外部Bean（特点）：可以被多个对象引用 -->
+	<bean id="book05" class="com.wind.Book">
+		<property name="user">
+			<!-- 内部Bean只能在该类中使用 -->
+			<bean class="com.wind.User">
+				<property name="userName" value="小李飞刀"></property>
+				<property name="age" value="30"></property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- Bean对象之间的依赖 -->
+	<!-- 容器中类加载的顺序：从上到下 -->
+	<bean id="user001" class="com.wind.User"></bean> 				<!--1. 通过无参构造器将对象创建出来 -->
+	
+	<bean id="book001" class="com.wind.Book" depends-on="user001">	<!-- depends-on：Book对象依赖了User这个对象 -->
+		<property name="user" value="#{user001}"></property>		<!-- 2.再给Book对象的属性赋值 -->
+	</bean>
+	<!--  
+			parent属性：经常被引用的对象提取出来，作为父对象
+		  abstract属性：设为true的话，说明创建的是抽象bean，只能被继承，不能创建对象。
+	-->
+	<bean id="book002" class="com.wind.Book" parent="book001" abstract="true"></bean>
+	
+	<!-- 复杂属性注入：数组、List/Set、Map、Properties（Map类型 继承了HashTable） -->
+	<bean id="FlexibleBean01" class="com.wind.FlexibleBean">
+		<!-- 给数组赋值 
+				如果数组只有一个值，我们可以使用value或者ref赋值：<property name="arr" value="张三丰"></property>
+				如果数组中有多个值，我们使用array标签
+		-->
+		<property name="arr" value="张三丰"></property>
+	</bean>
+</beans>
