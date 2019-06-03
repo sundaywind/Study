@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
   <display-name>SpringMVC</display-name>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
-  </welcome-file-list>
+
+	<!-- The front controller of this Spring Web application, responsible for handling all application requests -->
+	<!-- 翻译：这个Spring Web应用程序的前端控制器，负责处理所有的应用程序请求 -->
+	<servlet>
+		<!--  
+			SpringMVC默认配置文件：（它只是默认去这个位置找 不能不配）
+				/WEB-INF/springDispatcherServlet（<servlet-name>跟这名字保持一致）-servlet.xml
+		-->
+		<servlet-name>springDispatcherServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- 配置SpringMVC配置文件的路径及名称 -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:springmvc.xml</param-value>
+		</init-param>
+		<!-- 
+			load-on-startup：
+				0和正整数值：表示服务器启动时创建当前servlet对象。值越小优先级越高！
+				负整数：表示的是 我们第一次访问服务器的时候创建当前servlet对象。
+		-->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!-- Map all requests to the DispatcherServlet for handling -->
+	<!-- 翻译：将所有请求映射到DispatcherServlet进行处理 -->
+	<servlet-mapping>
+		<servlet-name>springDispatcherServlet</servlet-name>
+		<!-- jsp除外 -->
+		<url-pattern>/</url-pattern><!-- / 斜杠表示拦截所有请求 -->
+	</servlet-mapping>
+	
+	
+	<!-- 处理POST请求乱码的过滤器 -->
+	<!--  
+		一定要把处理乱码的过滤器配置在其他过滤器前面。
+		多个过滤器会形成过滤器链，从上到下加载，处理乱码的配置在后面有可能出现乱码问题。
+	-->
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- POST请求转换为PUT、DELETE请求 -->
+	<filter>
+		<filter-name>HiddenHttpMethodFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>HiddenHttpMethodFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 </web-app>

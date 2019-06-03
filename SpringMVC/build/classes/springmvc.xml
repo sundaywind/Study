@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<!-- 配置扫描包 -->
+	<context:component-scan base-package="com.wind.controller"/>
+	
+	<!-- 配置内部资源视图解析器 ：负责将逻辑视图转化为物理视图，并转发到目标页面-->
+	<!-- 
+		作用：还是封装的思想 。
+			以后我们就不用写 return "/WEB-INF/success.jsp"; 而直接写 return "success";
+			其实还可以定义一个变量 哈哈哈 这个太low了！
+	-->
+	<!--  
+		逻辑视图：return "success";（看上去是普通的字符串（只在Controller类的return中起作用））
+		物理视图：return "/WEB-INF/success.jsp";（实实在在有这个东西，能到达这个页面）
+	-->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+</beans>

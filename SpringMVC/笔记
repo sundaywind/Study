@@ -1,0 +1,65 @@
+1.SpringMVC是Spring的一个模块（一个jar包：spring-webmvc-4.0.0.RELEASE.jar）
+
+2.SpringMVC工作在Web层（特点：接收浏览器发送的请求及参数）
+
+3.SpringMVC的优势？（与Struts2相比）
+	1）为展示层提供基于MVC设计理念的优秀Web框架，是目前最流行的MVC框架之一
+	2）SpringMVC通过一套MVC注解，让POJO成为处理请求的控制器，而无需实现任何接口。
+	3）支持REST（GET POST PUT DELETE）风格的URL请求。
+	4）采用了松散耦合可插拔组件结构，比其他MVC框架更具扩展性和灵活性。（用的时候配置，不用的时候不配置就行）
+
+4.第一个案例：
+	1）创建动态Web工程，导入jar包。
+		commons-logging-1.1.3.jar
+		spring-aop-4.0.0.RELEASE.jar
+		spring-aspects-4.0.0.RELEASE.jar
+		spring-beans-4.0.0.RELEASE.jar
+		spring-context-4.0.0.RELEASE.jar
+		spring-core-4.0.0.RELEASE.jar
+		spring-expression-4.0.0.RELEASE.jar
+		spring-web-4.0.0.RELEASE.jar
+		spring-webmvc-4.0.0.RELEASE.jar
+	2)创建springmvc.xml的配置文件。
+	3）在web.xml文件中配置一个servlet，SpringMVC的前端控制器【核心控制器】
+	4）编写控制器类（Controller类），在springmvc.xml配置文件中 配置扫描包。
+
+5.SpringMVC运行流程：
+	1）页面发起请求（index.jsp），因为我们在web.xml文件中配置了（springDispatcherServlet）拦截所有请求。
+	2）拦截后会去配置Controller类中找（在springmvc.xml配置文件中配置了Controller类了），有没有RequestMapping和我请求的URL保持一致。
+	3）有就走这个方法，没找到就报404。
+	
+6.@RequestMapping（用于映射请求URL）（方法上是一定要标注的 也可以标注在类上）属性：
+	1)value：要和RUL保持一致。它是一个数组。RequestMapping只有一个属性时 value可以省略：@RequestMapping("/success")。
+		支持Ant（通配符）请求风格请求的URL：
+			-	?		代表匹配请求路径中的任意一个字符
+			-	*		代表匹配请求路径中的任意多个字符
+			-	**		代表匹配请求路径中的多层路径
+	2)method：表示请求的方式（默认不写四种请求方式都支持）（也是一个数组）：
+		GET：超链接或者查询
+		POST：添加或者上传文件
+		PUT：更新数据
+	 	DELETE：删除
+	 3)params：表示的是限制请求URL中携带的参数（限制 请求路径中带哪些参数、参数的值）
+		params = {"username"}：请求路径必须携带username参数（http://localhost:8080/SpringMVC/First/index?username=aaa）
+		params = {"username", "!password"}：请求路径必须携带username参数并且不能携带password参数（http://localhost:8080/SpringMVC/First/index?username=aaa&password=123  报404）
+	 4)headers：表示限制请求头信息。（指定的话 必须按指定的请求头走！浏览器按F12 NetWork查看请求头和响应头）
+		headers = {"Accept-Language=zh-CN,zh;q=0.9"}  *中间不能有空格，params也一样 不能有空格！
+		
+7.@RequestParam(value = "username") String name
+	意思是：将请求的name值等于username的参数的值  绑定到 请求方法的 name这个变量上。
+	如果表单中的 name值和方法中接收的变量名称一致时 注解可以省略。
+	* 目标方法上的参数顺序没关系！（耻辱啊 不说了！）
+	 
+8.处理请求乱码的问题：
+	get请求乱码：在Tomcat服务器（包资源管理器的Servers）的server.xml文件中Connector标签那 port=8080 那加 URIEncoding="UTF-8"
+	post请求乱码：在web.xml文件中设置一个Filter，拦截所有请求（/*）将POST请求参数值的中文不乱码。	 
+	 
+9.如何给后台服务器发送PUT、DELETE请求：
+	在web.xml文件中配置一个Filter，HiddenHttpMethodFilter（作用是将POST请求转换为PUT、DELETE请求）
+	 
+10.接收的参数：
+	1）单个参数：name名和参数的变量名一致。
+	2）接收数组： String[] hobby（用数组接收）
+	3）接收POJO（普通的Java对象）：SpringMVC框架会将表单中的name值注入到POJO对象的属性值 框架帮我们完成 并且 会自动转换简单的数据类型。	 
+	 
+	 
