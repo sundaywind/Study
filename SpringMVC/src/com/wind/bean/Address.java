@@ -2,6 +2,8 @@ package com.wind.bean;
 
 public class Address {
 
+        // 我来自云端！
+	
 	private String province;
 	private String city;
 	

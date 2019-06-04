@@ -2,7 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
 	<!-- 配置扫描包 -->
@@ -22,4 +24,16 @@
 		<property name="prefix" value="/WEB-INF/"/>
 		<property name="suffix" value=".jsp"/>
 	</bean>
+	
+	<!-- 映射请求URL：不经过Controller中的方法，直接到达目标页面 -->
+	<mvc:view-controller path="/mvc" view-name="success"/>
+	<!-- 配置了上面映射请求URL会是Controller失效！配置下面driven就好使了。配置了下面处理静态资源的 没有driven也不好使，所以它是标配！ -->
+	<mvc:annotation-driven/>
+	
+	<!-- 
+		处理静态资源的标签 。
+			如果在Controller类中没有找到请求URL对应的RequestMapping，Spring就会将这个请求交给Tomcat服务器来处理。
+			在Tomcat服务器中交给default-servlet（在Servers的web.xml文件中）来处理静态资源。
+	-->
+	<mvc:default-servlet-handler/>
 </beans>

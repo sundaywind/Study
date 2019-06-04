@@ -61,5 +61,54 @@
 	1）单个参数：name名和参数的变量名一致。
 	2）接收数组： String[] hobby（用数组接收）
 	3）接收POJO（普通的Java对象）：SpringMVC框架会将表单中的name值注入到POJO对象的属性值 框架帮我们完成 并且 会自动转换简单的数据类型。	 
+
+11.@RequestHeader注解（标注在目标方法上）：
+	用于获取请求头信息。
+		@RequestHeader(value = "User-Agent") String headerInfo  // 将请求头 value值对应的信息绑定到 后面的变量上。
+
+12.Rest请求风格 建议在请求路径中携带参数；@RequestMapping("getUserById/{id}") // 占位符占住请求路径
+	而Http请求 习惯 ?username=ZhangSan&password=123
+
+13.@PathVariable(value = "id") String pathId	（用于接收请求路径中的值）
+		将请求路径中的值 绑定到目标方法的变量上。
+		
+14.SpringMVC支持的返回值类型：
+	 1）String
+	 2）void	（看起来没返回值，其实是return ;）
+	 3）ModelAndView
+
+15.SpringMVC转发与重定向：
+	 转发：    return "forward:/list.jsp";
+	 重定向：return "redirect:/list.jsp";
+
+16.SpringMVC对于JSON数据的处理：
+	 1）导入json.jar包
+	 2）@ResponseBody
 	 
+17.发送Ajax请求：
+	<script type="text/javascript">
+		$(function(){
+			$("#btn").click(function(){
+				$.ajax({
+					type : "get",
+					url  :	"${pageContext.request.contextPath}/First/toJson",
+					data :	{},
+					success : function(msg) {
+						for (var i = 0; i < msg.length; i++) {
+							alert(msg[i].username);
+						}
+					}
+				})
+			})
+		})
+	</script>
+	<input id="btn" type="button" value="发送ajax获取JSON数据"/>
+	
+
+
+
+
+
+
+
 	 

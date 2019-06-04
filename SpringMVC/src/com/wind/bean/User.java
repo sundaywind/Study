@@ -17,6 +17,18 @@ public class User {
 	private List<Address> list;
 	
 	
+	public User() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	public User(String username, String pwd, int age) {
+		super();
+		this.username = username;
+		this.pwd = pwd;
+		this.age = age;
+	}
+
 	public List<Address> getList() {
 		return list;
 	}
