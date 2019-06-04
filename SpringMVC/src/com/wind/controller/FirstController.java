@@ -1,11 +1,17 @@
 package com.wind.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.wind.bean.User;
 
@@ -72,14 +78,21 @@ public class FirstController {
 	 * 		2）接收数组： String[] hobby（用数组接收）
 	 * 		3）接收POJO（普通的Java对象）：SpringMVC框架会将表单中的name值注入到POJO对象的属性值 框架帮我们完成 并且 会自动转换简单的数据类型。
 	 */
+	
+	/*
+	 * 	@RequestHeader(value = "User-Agent") String headerInfo
+	 * 		将请求头 value值对应的信息绑定到 后面的变量上。
+	 */
+	
 	// 在POJO中 params属性限制也是起作用的！
 	@RequestMapping(value = {"/success/?", "/index"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT}, params = {"username", "!password", "username!=aaa"}, headers = {"Accept-Language=zh-CN,zh;q=0.9"})
-	public String toIndexPage(@RequestParam(value = "username") String name, String age, String[] hobby, User user) {
+	public String toIndexPage(@RequestParam(value = "username") String name, String age, String[] hobby, User user, @RequestHeader(value = "User-Agent") String headerInfo) {
 		System.out.println("Controller方法进来了！");
 		if (hobby != null) {
 			System.out.println("username的值是：" + name + "、年龄是：" + age + "岁、爱好有：" + Arrays.asList(hobby)); // Arrays.asList()：将数组转换为List
 		}
 		System.out.println("user的值是：" + user);
+		System.out.println("请求头信息：" + headerInfo);
 		return "success";	// *第一个斜杠代表当前项目的根目录。
 		/*
 		 * 	return 现在这样直接写页面是转发。
@@ -87,5 +100,65 @@ public class FirstController {
 		 */
 	}
 	
+	/*
+	 * 	Rest请求风格 建议在请求路径中携带参数；@RequestMapping("getUserById/{id}") // 占位符占住请求路径
+	 * 	而Http请求 习惯 ?username=ZhangSan&password=123
+	 */
 	
+	/*
+	 * 	@PathVariable(value = "id") String pathId	（用于接收请求路径中的值）
+	 * 		将请求路径中的值 绑定到目标方法的变量上。
+	 */
+	@RequestMapping("getUserById/{id}")
+	public String getUserById(@PathVariable(value = "id") String pathId) {
+		System.out.println(pathId);
+		return "success";
+	}
+	
+	/*
+	 * 	SpringMVC支持的返回值类型：
+	 * 		1）String
+	 * 		2）void	（看起来没返回值，其实是return ;）
+	 * 		3）ModelAndView
+	 */
+	@RequestMapping("returnType")
+	public ModelAndView returnType() {
+		// 有参的会指定一个viewName（视图名），会经过视图解析器的解析 转化为物理视图并转发过去。
+		ModelAndView mv = new ModelAndView("success");
+		// 把数据放到ModelAndView中，ModelAndView会经过Spring框架的解析 会把数据放到request域中一份，所有可以用EL表达式在页面获取。
+		mv.addObject("list", Arrays.asList(new Integer[] {1,2,3,4,5}));
+		return mv;
+	}
+	
+	/*
+	 * 	SpringMVC转发与重定向：
+	 * 		转发：    return "forward:/list.jsp";
+	 * 		重定向：return "redirect:/list.jsp";
+	 */
+	@RequestMapping("redirect")
+	public String redirect() {
+		return "redirect:/list.jsp";	// 重定向不能直接访问/WEB-INF/目录下的资源，并且它也不会经过视图解析器。
+	}
+	@RequestMapping("forward")
+	public String forward() {
+		return "forward:/list.jsp";	// 直接用forward转发也不会经过视图解析器。
+	}
+	
+	/*
+	 * 	SpringMVC对于JSON数据的处理：
+	 * 		1）导入json.jar包
+	 * 		2）@ResponseBody
+	 */
+	@RequestMapping("toJson")
+	@ResponseBody
+	public List<User> toJson() {
+		List<User> list = new ArrayList<User>();
+		User user = new User("一蛋", "123", 24);
+		list.add(user);
+		user = new User("二蛋", "456", 45);
+		list.add(user);
+		user = new User("三蛋", "789", 15);
+		list.add(user);
+		return list;
+	}
 }

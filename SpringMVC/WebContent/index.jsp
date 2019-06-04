@@ -62,6 +62,9 @@
 			市：	<input type="text" name="list[2].city"/>
 		<input type="submit" value="POJO对象提交">
 	</form>
-	
+	<hr>
+	<form action="/SpringMVC/First/getUserById/12">
+		<input type="submit" value="获取请求路径中的值">
+	</form>
 </body>
 </html>

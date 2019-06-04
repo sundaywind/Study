@@ -7,6 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-	SUCCESS PAGE!
+	SUCCESS PAGE! ${list}
 </body>
 </html>
