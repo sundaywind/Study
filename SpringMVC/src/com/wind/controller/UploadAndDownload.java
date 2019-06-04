@@ -1,17 +1,24 @@
 package com.wind.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -86,6 +93,47 @@ public class UploadAndDownload {
 		 * 		查看镜像目录：工作空间/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/项目
 		 */
 		return "success";
+	}
+	
+	@RequestMapping(value = "download", method = RequestMethod.GET)
+	public ResponseEntity<byte[]> download(HttpServletRequest request) {	// 下载的返回值必须是它，要返回 所以在方法中创建出来 它没有无参构造器 只有有参构造器。
+		String fileName = "风吹麦浪.mp3";
+		// 要下载肯定要找到文件的真实路径，还得把HttpServletRequest整进来。
+		ServletContext context = request.getServletContext();
+		String realPath = context.getRealPath("/WEB-INF/" + fileName); 	// 获取到文件的真实路径
+		InputStream input = null;
+		try {
+			input = new FileInputStream(realPath);	// 通过真实路径把它转换为输入流
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}	
+		byte[] body = null;
+		try {
+			body = new byte[input.available()];	// available() 返回输入流的大小
+			input.read(body);	// 将文件的输入流写入到字节数组中
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		try {
+			// 还要设置文件名的编码，要不然点下载时文件名是空的；并且要在设置头前设置 要不也不起作用！
+			fileName = new String(fileName.getBytes("gbk"), "iso8859-1");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} 
+		MultiValueMap<String, String> headers = new HttpHeaders();
+		headers.add("Content-Disposition", "attachment;filename=" + fileName);	// 将设置头设置为附件下载（不设置的话浏览器默认会文本打开）
+		HttpStatus statusCode = HttpStatus.OK;	// 响应状态码，设置为OK！
+		ResponseEntity<byte[]> result = new ResponseEntity<byte[]>(body, headers, statusCode);	// 下载需要返回的对象
+		System.out.println("下载成功！");
+		return result;
 	}
 
 }

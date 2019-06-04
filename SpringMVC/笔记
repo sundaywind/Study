@@ -121,7 +121,18 @@
 		上传文件的字段要设置为file类型
 	3）需要在springmvc的配置文件中配置：CommonsMultipartResovler		并且必须设置它的id为：id="multipartResolver" （别的不好使 框架底层会在bean中找这个对象）
 	4）在Controller方法中，使用CommonsMultipartFile类型接收文件。
-	
+	<----以上操作只是将文件传到后台Controller-----> 
+	5）具体上传到Tomc 参考@Controller UploadAndDownload类中代码。困了···
+
+21.文件下载：
+	1）也需要 commons-fileupload 和 commons-io 这两个jar包。
+	2）jsp页面 超链接发送请求到Controller
+	3）下载文件的返回值必须是 ResponseEntity<byte[]> 对象，它有三个返回值：
+		ResponseEntity<byte[]>(byte[] body, MultiValueMap<String, String> headers, HttpStatus statusCode)
+			byte[] body：负责将文件的输入流写进字节数组里。
+			<!-- 在设置头前要设置文件名编码 要不点下载时没有文件名 下载的文件也不能打开  -->
+			MultiValueMap<String, String> headers：设置头的作用是将文件作为附件下载（浏览器默认会已文本方式打开）
+			HttpStatus statusCode：这个是枚举类型 只是一个响应码 OK！
 
 
 	 

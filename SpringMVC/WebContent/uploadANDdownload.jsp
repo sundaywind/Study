@@ -11,5 +11,7 @@
 		上传文件：<input type="file" name="file"/>
 		<input type="submit" value="上传"/>
 	</form>
+	<hr>
+	<a href="file/download">下载文件</a>
 </body>
 </html>
