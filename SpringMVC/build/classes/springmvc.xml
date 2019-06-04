@@ -36,4 +36,10 @@
 			在Tomcat服务器中交给default-servlet（在Servers的web.xml文件中）来处理静态资源。
 	-->
 	<mvc:default-servlet-handler/>
+	
+	<!-- 完成上传，我们必须配置 CommonsMultipartResolver类 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"/>		<!-- 设置默认编码格式 -->
+		<property name="maxUploadSize" value="5242880"/>	<!-- 设置最大上传大小（byte） -->
+	</bean>
 </beans>

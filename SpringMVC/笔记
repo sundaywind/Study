@@ -104,11 +104,24 @@
 	</script>
 	<input id="btn" type="button" value="发送ajax获取JSON数据"/>
 	
+18.SpringMVC两个格式化标签（要用SpringMVC格式化标签 首先得在springmvc.xml文件中配置<mvc:annotation-driven/>）：
+	1）	@DateTimeFormat(pattern="yyyy-MM-dd")
+		private Date birthday;
+	2）	@NumberFormat(pattern="###,###,###.##")
+		private double salary;
 
+19.自定义类型转换器【不常用 了解下（视频的 day02-15）】
+	类似：001-张三-true-zhangsan@163.com 转化为User对象的属性。（感觉没人这么用）
 
-
-
-
+20.文件上传：
+	1）导包：commons-fileupload 和 commons-io 这两个jar包。
+	2）在前端页面的要求：
+		post请求
+		enctype属性设置为：multipart/form-data
+		上传文件的字段要设置为file类型
+	3）需要在springmvc的配置文件中配置：CommonsMultipartResovler		并且必须设置它的id为：id="multipartResolver" （别的不好使 框架底层会在bean中找这个对象）
+	4）在Controller方法中，使用CommonsMultipartFile类型接收文件。
+	
 
 
 	 
