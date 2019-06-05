@@ -1,0 +1,26 @@
+1.环境搭建：
+	1）创建动态Web工程，导入jar包：
+		Spring
+		SpringMVC
+		MyBatis
+		JSTL
+		JSON
+	2）在web.xml中配置：spring、springmvc、CharacterEncodingFilter、HiddenHttpMethodFilter。
+	3）创建spring、springmvc的配置文件，并配置它们：	
+		springmvc：
+			扫描包：扫描加了【Controller、ControllerAdvice】注解的。（<context:component-scan base-package="com.wind.controller"/>）
+			配置内部资源视图解析器：（<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">）
+			配置处理静态资源的标签：（<mvc:default-servlet-handler/>）
+			springmvc标配：（<mvc:annotation-driven/>）
+		spring：
+			扫描包：除了【Controller、ControllerAdvice】注解的。
+			加载properties配置文件
+			配置数据源
+			配置事务管理器
+			开启基于注解的事务支持
+			sqlSessionFactoryBean
+			MapperScannerConfigurer
+		mybatis：
+			内容可以为空，但文件必须得创建！
+	4）写Controller、Service、Dao、XML
+	5）测试！done！
