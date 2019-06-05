@@ -134,5 +134,52 @@
 			MultiValueMap<String, String> headers：设置头的作用是将文件作为附件下载（浏览器默认会已文本方式打开）
 			HttpStatus statusCode：这个是枚举类型 只是一个响应码 OK！
 
+22.拦截器（框架封装的  功能类似于JavaWeb部分的过滤器）（没代码 需要了看视频）：
+	SpringMVC可以使用拦截器对请求进行拦截处理，用户可以自定义拦截器：
+		1）自定义实现类实现HandlerInterceptor接口
+		2）在springmvc.xml配置文件中配置相对应的拦截器
+			<mvc:interceptors>
+				<!-- 配置自定义拦截器，所有的路径都拦截 -->
+				<bean class="com.neuedu.springmvc.filter.MyFilter"></bean>
+			</mvc:interceptors>
+	-----------------------------------------------------------------------------------------------------------------------
+	拦截器的详细配置及多拦截器的配置	（看视频）
+	
+23.SpringMVC处理请求的流程：
+	浏览器端给服务器端发送请求，由于我们在web.xml文件中配置前端控制器（springDispatcherServlet）拦截所有请求，
+	SpringMVC拦截后去标注了@Controller的类中找 有没有一个方法的@RequestMapping的value值和请求URL保持一致，
+	如果有走这个方法 调用@Service层（业务逻辑层）从Model模型返回 模型数据（不管返回什么类型 框架都会给你解析为ModelAndView数据），
+	控制器（@Controller）返回ModelAndView数据给前端控制器，前端控制器会通过内部资源视图解析器 把视图解析出来（jsp页面地址），
+	把ModelAndView中的Model数据填充到视图（jsp页面）中，前端控制器把填充好的视图 通过网络返回给浏览器端。
+	
+24.SpringMVC源码跟踪
+	
+25.springmvc全局异常处理
+
+26.基于xml的异常处理
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	 
