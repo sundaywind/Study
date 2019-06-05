@@ -24,3 +24,115 @@
 			内容可以为空，但文件必须得创建！
 	4）写Controller、Service、Dao、XML
 	5）测试！done！
+
+2.用户、角色、权限：
+	用户与角色：（应该是）多对多的关联关系
+		（本项目）角色（一） -对-> 用户（多）
+	角色与权限：（应该是）多对多的关联关系
+		（本项目）角色（多） -对-> 权限（多）
+	* 多对多：肯定有第三张表
+	* 一对多：在多的一端保存一的一端的主键。
+	
+3.怎么根据原项目写我的项目：
+	页面布局（F12 --> 查看网页源代码 --> copy）
+	
+4.转发与重定向：
+	一、调用方式：
+		我们知道，在servlet中调用转发、重定向的语句如下：
+			request.getRequestDispatcher("new.jsp").forward(request, response);   //转发到new.jsp
+			response.sendRedirect("new.jsp");   //重定向到new.jsp
+		在jsp页面中你也会看到通过下面的方式实现转发：
+			<jsp:forward page="apage.jsp" />
+		当然也可以在jsp页面中实现重定向：
+			<%response.sendRedirect("new.jsp"); %> //重定向到new.jsp
+	二、本质区别：
+		解释一：
+			一句话，转发是服务器行为，重定向是客户端行为。为什么这样说呢，这就要看两个动作的工作流程：
+				转发过程：客户浏览器发送http请求——》web服务器接受此请求——》调用内部的一个方法在容器内部完成请求处理和转发动作——》将目标资源发送给客户；在这里，转发的路径必须是同一个web容器下的url，其不能转向到其他的web路径上去，中间传递的是自己的容器内的request。在客户浏览器路径栏显示的仍然是其第一次访问的路径，也就是说客户是感觉不到服务器做了转发的。转发行为是浏览器只做了一次访问请求。
+				重定向过程：客户浏览器发送http请求——》web服务器接受后发送302状态码响应及对应新的location给客户浏览器——》客户浏览器发现是302响应，则自动再发送一个新的http请求，请求url是新的location地址——》服务器根据此请求寻找资源并发送给客户。在这里location可以重定向到任意URL，既然是浏览器重新发出了请求，则就没有什么request传递的概念了。在客户浏览器路径栏显示的是其重定向的路径，客户可以观察到地址的变化的。重定向行为是浏览器做了至少两次的访问请求的。
+		解释二：
+			重定向，其实是两次request：
+				第一次，客户端request   A,服务器响应，并response回来，告诉浏览器，你应该去B。这个时候IE可以看到地址变了，而且历史的回退按钮也亮了。重定向可以访问自己web应用以外的资源。在重定向的过程中，传输的信息会被丢失。
+		例子：
+			response.sendRedirect("loginsuccess.jsp");
+			请求转发是服务器内部把对一个request/response的处理权，移交给另外一个
+		例子：
+			RequestDispatcher dis=request.getRequestDispatcher(“loginsuccess.jsp”);
+		    Dis.forward(request,response);
+		解释三：
+			假设你去办理某个执照
+			重定向：你先去了A局，A局的人说：“这个事情不归我们管，去B局”，然后，你就从A退了出来，自己乘车去了B局。
+			转发：你先去了A局，A局看了以后，知道这个事情其实应该B局来管，但是他没有把你退回来，而是让你坐一会儿，自己到后面办公室联系了B的人，让他们办好后，送了过来。
+			
+5.RedirectAttributes：
+	是Spring mvc 3.1版本之后出来的一个功能，专门用于重定向之后还能带参数跳转的。
+	他有两种带参的方式：
+		第一种： 
+			attr.addAttribute("param", value);  
+			这种方式就相当于重定向之后，在url后面拼接参数，这样在重定向之后的页面或者控制器再去获取url后面的参数就可以了，但这个方式因为是在url后面添加参数的方式，所以暴露了参数，有风险！这样就相当于：return "redirect:/index?name=123&success=success"
+		第二种： 
+			attr.addFlashAttribute("param", value);
+			这种方式也能达到重新向带参，而且能隐藏参数，其原理就是放到session中，session在跳到页面后马上移除对象。所以你刷新一下后这个值就会丢掉。
+			
+6.MyBatis传入多个参数的问题：
+	一、单个参数：
+		public List<XXBean> getXXBeanList(String xxCode);  
+		<select id="getXXXBeanList" parameterType="java.lang.String" resultType="XXBean">
+		　　select t.* from tableName t where t.id= #{id}  
+		</select>  
+		其中方法名和ID一致，#{}中的参数名与方法中的参数名一直， 我这里采用的是XXXBean是采用的短名字,
+		select 后的字段列表要和bean中的属性名一致， 如果不一致的可以用 as 来补充。
+	二、多参数：
+		public List<XXXBean> getXXXBeanList(String xxId, String xxCode);  
+		<select id="getXXXBeanList" resultType="XXBean">
+		　　select t.* from tableName where id = #{0} and name = #{1}  
+		</select>  
+		由于是多参数那么就不能使用parameterType， 改用#｛index｝是第几个就用第几个的索引，索引从0开始。
+	三、Map封装多参数：  
+		public List<XXXBean> getXXXBeanList(HashMap map);  
+		<select id="getXXXBeanList" parameterType="hashmap" resultType="XXBean">
+		　　select 字段... from XXX where id=#{xxId} code = #{xxCode}  
+		</select>  
+		其中hashmap是mybatis自己配置好的直接使用就行。map中key的名字是那个就在#{}使用那个，map如何封装就不用了我说了吧。 
+	 四、List封装in：
+		public List<XXXBean> getXXXBeanList(List<String> list);  
+		<select id="getXXXBeanList" resultType="XXBean">
+		　　select 字段... from XXX where id in
+		　　<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		　　　　#{item}  
+		　　</foreach>  
+		</select>  
+		foreach 最后的效果是select 字段... from XXX where id in ('1','2','3','4') 
+	五、多参数传递之注解方式示：    
+		例子：
+			public AddrInfo getAddrInfo(@Param("corpId")int corpId, @Param("addrId")int addrId);
+			xml配置这样写：
+			<select id="getAddrInfo"  resultMap="com.xxx.xxx.AddrInfo">
+			       SELECT * FROM addr__info 
+			　　　　where addr_id=#{addrId} and corp_id=#{corpId}
+			</select>
+		以前在<select>语句中要带parameterType的，现在可以不要这样写。
+	六、selectList()只能传递一个参数，但实际所需参数既要包含String类型，又要包含List类型时的处理方法：
+		将参数放入Map，再取出Map中的List遍历。如下：
+			List<String> list_3 = new ArrayList<String>();
+			Map<String, Object> map2 = new HashMap<String, Object>();
+			list.add("1");
+			list.add("2");
+			map2.put("list", list); //网址id
+			map2.put("siteTag", "0");//网址类型
+			public List<SysWeb> getSysInfo(Map<String, Object> map2) {
+			　　return getSqlSession().selectList("sysweb.getSysInfo", map2);
+			}
+			<select id="getSysInfo" parameterType="java.util.Map" resultType="SysWeb">
+			　　select t.sysSiteId, t.siteName, t1.mzNum as siteTagNum, t1.mzName as siteTag, t.url, t.iconPath
+			   from TD_WEB_SYSSITE t
+			   left join TD_MZ_MZDY t1 on t1.mzNum = t.siteTag and t1.mzType = 10
+			   WHERE t.siteTag = #{siteTag } 
+			   and t.sysSiteId not in 
+			   <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			       #{item}
+			   </foreach>
+			 </select>
+				
+				
+				

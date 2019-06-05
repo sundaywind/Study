@@ -21,4 +21,6 @@
 	<mvc:default-servlet-handler/>
 	<!-- SpringMVC标配 -->
 	<mvc:annotation-driven/>
+	<!-- ==========以下跟配置无关============ -->
+	<mvc:view-controller path="/index" view-name="success"/>
 </beans>
