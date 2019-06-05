@@ -152,11 +152,11 @@
 	控制器（@Controller）返回ModelAndView数据给前端控制器，前端控制器会通过内部资源视图解析器 把视图解析出来（jsp页面地址），
 	把ModelAndView中的Model数据填充到视图（jsp页面）中，前端控制器把填充好的视图 通过网络返回给浏览器端。
 	
-24.SpringMVC源码跟踪
+24.SpringMVC源码跟踪。
 	
-25.springmvc全局异常处理
+25.springmvc全局异常处理。
 
-26.基于xml的异常处理
+26.基于xml的异常处理。
 	
 	
 	
