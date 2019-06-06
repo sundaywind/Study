@@ -201,12 +201,9 @@ function doSubmit(){
 			</TR>
 		</TABLE>
 	</form>
+<c:if test="${message != null}">
 	<script type="text/javascript">
-		alert("${msg}")
-	</script>
-<c:if test="${msg != null}">
-	<script type="text/javascript">
-		alert("${msg}");	
+		alert("${message}");	
 	</script>
 </c:if>
 </body>

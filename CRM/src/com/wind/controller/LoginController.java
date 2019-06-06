@@ -6,8 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.wind.bean.User;
 import com.wind.service.LoginService;
 /*
  	RedirectAttributes：是Spring mvc 3.1版本之后出来的一个功能，专门用于重定向之后还能带参数跳转的。
@@ -26,17 +28,15 @@ public class LoginController {
 	private LoginService loginService;
 	
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public String goHome(Model model, @RequestParam(value = "username")String name, @RequestParam("password")String pwd, RedirectAttributes addAttribute) {
+	public String goHome(@RequestParam(value = "username")String name, @RequestParam("password")String pwd, Model model, RedirectAttributes  addAttribute) {
 		if (name != null && name != "" && pwd != null && pwd != "") {
-			String Pass = loginService.verifyUserLogin(name, pwd);
-			if (Pass != null && !"".equals(Pass)) {
-				model.addAttribute("msg", "用户名或密码不能为空");
-				addAttribute.addAttribute("msgs", "用户名或密码不能为空");
-				return "home";
+			User user = loginService.verifyUserLogin(name, pwd);
+			if (user != null) {
+				model.addAttribute("msg", "登陆成功！");
+				return "view/home";
 			}
 		}
-		model.addAttribute("msg", "用户名或密码不能为空");
-		addAttribute.addAttribute("msg", "用户名或密码不能为空");
+		addAttribute.addAttribute("message", "用户名或密码不能为空");
 		return "redirect:/index";
 	}
 }

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="/commons/common.jsp" %>
+<link href="/crm/static/css/styles.css" rel="stylesheet" type="text/css">
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,12 +13,8 @@
 	<script type="text/javascript" src="${ctx }/static/jquery/jquery.easyui.min.js"></script>
 </head>
 <body>
-	<h2>Animation Tree</h2>
-	<div class="demo-info">
-		<div class="demo-tip icon-tip"></div>
-		<div>Apply 'animate' property to true to enable animation effect.</div>
-	</div>
 	<div style="margin:10px 0;"></div>
-	<ul class="easyui-tree" data-options="url:'tree_data1.json',method:'get',animate:true"></ul>
+	<!-- data-options：url（发送请求）、,method：get方法、animate：动画 -->
+	<ul class="easyui-tree" data-options="url:'${pageContext.request.contextPath}/commons/tree_data1.json',method:'get',animate:true"></ul>
 </body>
 </html>
