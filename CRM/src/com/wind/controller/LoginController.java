@@ -33,7 +33,7 @@ public class LoginController {
 			User user = loginService.verifyUserLogin(name, pwd);
 			if (user != null) {
 				model.addAttribute("msg", "登陆成功！");
-				return "view/home";
+				return "view/success";
 			}
 		}
 		addAttribute.addAttribute("message", "用户名或密码不能为空");
