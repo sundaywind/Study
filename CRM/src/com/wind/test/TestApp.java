@@ -12,6 +12,7 @@ public class TestApp {
 
 	@Test
 	public void Test01() throws SQLException {
+		// 测试配置的数据源能否连接数据库
 		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
 		DataSource dataSource = ac.getBean(DataSource.class);
 		Connection connection = dataSource.getConnection();
