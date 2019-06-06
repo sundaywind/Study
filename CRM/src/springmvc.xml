@@ -22,5 +22,14 @@
 	<!-- SpringMVC标配 -->
 	<mvc:annotation-driven/>
 	<!-- ==========以下跟配置无关============ -->
-	<mvc:view-controller path="/index" view-name="success"/>
+	<!--  
+		mvc:view-controller：
+			path="/header" ：当前项目下的header请求。
+			view-name="success" ： 会经过视图解析器转发到哪个页面。
+	-->
+	<mvc:view-controller path="/index" view-name="login"/> <!-- 这条重定向到 login 页面 -->
+	<mvc:view-controller path="/header" view-name="view/header"/>
+	<mvc:view-controller path="/menu" view-name="view/tree"/>
+	<mvc:view-controller path="/welcome" view-name="view/welcome"/>
+	<mvc:view-controller path="/footer" view-name="view/footer"/>
 </beans>
