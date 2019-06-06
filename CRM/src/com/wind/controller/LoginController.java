@@ -35,7 +35,6 @@ public class LoginController {
 				return "home";
 			}
 		}
-		model.addAttribute("msg", "用户名或密码不能为空");
 		addAttribute.addAttribute("msg", "用户名或密码不能为空");
 		return "redirect:/index";
 	}

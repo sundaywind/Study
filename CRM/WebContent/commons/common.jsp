@@ -3,6 +3,7 @@
 
 <%@ include file="/commons/taglib.jsp"%>
 <link href="${ctxStatic}/css/styles.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/static/jquery/jquery-1.9.1.min.js"></script>
 
 <!-- 格式化时间 -->
 <script type="text/javascript">

@@ -201,8 +201,9 @@ function doSubmit(){
 			</TR>
 		</TABLE>
 	</form>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script type="text/javascript">
-		alert("${msg}")
+		alert("${msg}");	
 	</script>
 <c:if test="${msg != null}">
 	<script type="text/javascript">
