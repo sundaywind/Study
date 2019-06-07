@@ -147,5 +147,16 @@
 		3）new一个jsp，引入css、js、代码到页面以及拷贝json文件（tree_data.json）
 		4）启动Tomcat。
 	
-	
+9.头部显示用户名、角色名和注销：
+		显示用户名、角色名：
+			要显示头部信息，我们需要在用户登录成功的情况下 把用户的信息放入到HttpSession中，页面才能取到。（session.setAttribute("user", user);）
+		注销：
+			点击注销，我们需要将HttpSession中的user对象删除、或清空整个HttpSession中的内容。（session.removeAttribute("user"); 或者   session.invalidate();）
+			
+			
+			
+			
+			
+			
+			
 

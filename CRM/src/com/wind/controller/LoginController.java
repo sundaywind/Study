@@ -1,12 +1,13 @@
 package com.wind.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.wind.bean.User;
@@ -28,15 +29,28 @@ public class LoginController {
 	private LoginService loginService;
 	
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public String goHome(@RequestParam(value = "username")String name, @RequestParam("password")String pwd, Model model, RedirectAttributes  addAttribute) {
+	public String goHome(@RequestParam(value = "username")String name, @RequestParam("password")String pwd, Model model, RedirectAttributes  addAttribute, HttpSession session) {
 		if (name != null && name != "" && pwd != null && pwd != "") {
 			User user = loginService.verifyUserLogin(name, pwd);
 			if (user != null) {
 				model.addAttribute("msg", "登陆成功！");
+				session.setAttribute("user", user);
 				return "view/success";
 			}
 		}
 		addAttribute.addAttribute("message", "用户名或密码不能为空");
 		return "redirect:/index";
+	}
+	
+	@RequestMapping("/logout")
+	public String logout(HttpSession session) {
+		/*
+		 * 	有两种方法可以清理HttpSession：
+		 * 		session.removeAttribute("user") ： 清理session中对应的内容。（你把user放进session，<K,V>的方式 用K去清理对应的session内容）
+		 * 		session.invalidate() ：清理session中所有的内容。
+		 */
+		session.removeAttribute("user");
+		session.invalidate();
+		return "login";
 	}
 }

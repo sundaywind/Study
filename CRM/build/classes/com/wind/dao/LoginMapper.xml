@@ -2,7 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wind.dao.LoginMapper">
     
+    <!-- 别名最好加双引号，遇到有点的（.）可能会出问题！ -->
 	<select id="verifyUserLogin" resultType="com.wind.bean.User">
-		SELECT id, name, password FROM users WHERE name = #{name} AND password = #{pwd}
+		SELECT 
+			a.id AS "id", 
+			a.name AS "name", 
+			a.password AS "password", 
+			b.name AS "role.name"
+		FROM users a 
+			LEFT JOIN roles b ON b.id = a.role_id 
+		WHERE a.name = #{name} and a.password = #{pwd}
 	</select>
 </mapper>
