@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@include file="/commons/common.jsp"%>
-<link href="/crm/static/css/styles.css" rel="stylesheet" type="text/css">
 <!DOCTYPE html>
 <html>
   <head>

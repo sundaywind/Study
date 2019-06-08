@@ -7,10 +7,16 @@
 		"state":"closed",
 		"children":[{
 			"id":111,
-			"text":"营销机会管理"
+			"text":"营销机会管理",
+			"attributes":{
+				"url":"/deom/book/abc"
+			}
 		},{
 			"id":112,
-			"text":"客户开发计划"
+			"text":"客户开发计划",
+			"attributes":{
+				"url":"/deom/book/123"
+			}
 		}]
 	},{
 		"id":12,

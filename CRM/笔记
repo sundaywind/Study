@@ -153,10 +153,45 @@
 		注销：
 			点击注销，我们需要将HttpSession中的user对象删除、或清空整个HttpSession中的内容 然后去登录页。（session.removeAttribute("user"); 或者   session.invalidate();）
 			
+10.给EasyUI的tree添加一个点击事件：
+	<script type="text/javascript">
+		$(function(){
+			/*  
+				jQuery取id：$("#tt") 忘写一个# 搞了半天！
+				这是查找jQuery官方文档的tree。
+				下面代码表示：
+					给id为tt的tree 添加了一个点击事件。而node是JSON文件的一个节点。
+			*/
+			$("#tt").tree({
+				onClick:function(node){
+					alert(node.text);
+				}
+			})
+		})
+	</script>
+	<!-- data-options：url（发送请求）、,method：get方法、animate：动画 -->
+	<ul id="tt" class="easyui-tree" data-options="url:'${pageContext.request.contextPath}/commons/tree_data1.json',method:'get',animate:true"></ul>			
 			
-			
-			
-			
+11.点击左侧导航栏的时候 右边发生变化：
+	思路是：左侧导航栏是tree.jsp页面  点击tree.jsp页面时 让点击的url去替换success.jsp页面的 welcome.jsp页面的src引用的url 完成变化！
+	1）在tree.jsp获取节点（笔记10的步骤）
+	2）在节点中添加自定义属性（tree_data1.json）：
+		"attributes":{
+			"url":"/deom/book/abc"
+		}
+	3）在tree.jsp页面获取添加的url：（JSON取值都是根据字符串的键（K） 多层关系直接用点（.））
+		node.attributes.url
+	4）更换点击导航栏（tree.jsp）的url给success.jsp的id为content的src属性  完成替换！
+		window.parent.document.getElementById("content").src = node.attributes.url;
+	
+12.在js中判断变量是否为空：
+	如果不为空返回true、为空返回false：
+		var sum = "aaa";
+		if (sum) {
+			alert("true");
+		} else {
+			alert("false");
+		}
 			
 			
 

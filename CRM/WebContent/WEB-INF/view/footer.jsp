@@ -5,7 +5,6 @@
 <html>
   <head>
     <title>欢迎使用！</title>
-	<link rel="stylesheet" type="text/css" href="styles.css" >
   </head>
   <body style="font-size:12px;color:dark-blue;scroll:no;border-top:solid 1px #666;">
 <div style="text-align:right;padding:6px;">

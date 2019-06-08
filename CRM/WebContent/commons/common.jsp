@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ include file="/commons/taglib.jsp"%>
-<link href="${ctxStatic}/css/styles.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="${ctxStatic }/css/styles.css">
 <script type="text/javascript" src="${ctxStatic}/jquery/jquery.min.js"></script>
 <!-- 格式化时间 -->
 <script type="text/javascript">
