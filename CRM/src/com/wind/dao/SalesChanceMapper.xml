@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wind.dao.SalesChanceMapper">
+    
+    <!-- 别名最好加双引号，遇到有点的（.）可能会出问题！ -->
+	<select id="getList" resultType="com.wind.bean.SalesChance">
+		select 
+			id,
+			contact,
+			contact_tel AS "contactTel",
+			create_date AS "createDate",
+			cust_name AS "custName",
+			description,
+			designee_date AS "designeeDate",
+			rate,
+			source,
+			status,
+			title
+		from sales_chances
+		where status = '1'
+	</select>
+	
+	<update id="deleteById">
+		UPDATE sales_chances SET status = '4' WHERE id = #{id}
+	</update>
+	
+	<select id="getSalesChanceById" resultType="com.wind.bean.SalesChance">
+		select 
+			id,
+			contact,
+			contact_tel AS "contactTel",
+			create_date AS "createDate",
+			cust_name AS "custName",
+			description,
+			designee_date AS "designeeDate",
+			rate,
+			source,
+			status,
+			title
+		from sales_chances
+		where id = #{id}
+	</select>
+	
+	<insert id="saveSalesChance">
+		insert into sales_chances(
+			id,
+			contact,
+			contact_tel,
+			create_date,
+			cust_name,
+			description,
+			rate,
+			source,
+			status,
+			title
+		) values(
+			#{id},
+			#{contact},
+			#{contactTel},
+			#{createDate},
+			#{custName},
+			#{description},
+			#{rate},
+			#{source},
+			#{status},
+			#{title}
+		)
+	</insert>
+</mapper>

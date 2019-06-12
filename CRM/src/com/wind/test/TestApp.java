@@ -10,6 +10,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class TestApp {
 
+	@SuppressWarnings("resource")
 	@Test
 	public void Test01() throws SQLException {
 		// 测试配置的数据源能否连接数据库
