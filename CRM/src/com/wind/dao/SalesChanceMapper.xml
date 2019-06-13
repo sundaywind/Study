@@ -66,4 +66,28 @@
 			#{title}
 		)
 	</insert>
+	
+	<select id="getTotalRecord" resultType="_int">
+		select count(1) from sales_chances where status = '1'
+	</select>
+	
+	<select id="getPageList" resultType="com.wind.bean.SalesChance">
+		select *
+		from (select 
+				rownum rn,
+				id, 
+				contact, 
+				contact_tel AS "contactTel",
+				create_date AS "createDate", 
+				cust_name AS "custName", 
+				description,
+		      	designee_date AS "designeeDate",
+		      	rate,
+		      	source,
+		      	status,
+		      	title
+		      from sales_chances
+		  	  where status = '1') temp
+		where rn >= #{firstIndex} and rn &lt; #{endIndex}
+	</select>
 </mapper>

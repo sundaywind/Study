@@ -2,8 +2,6 @@
     pageEncoding="UTF-8"%>
 <!-- include的jsp页面里面有jsp头，也要写 不管引什么 头不能丢！ -->
 <%@include file="/commons/common.jsp"%>
-
-<link rel="stylesheet" type="text/css" href="${ctxStatic }/css/sytles.css">
 <html>
 <HEAD>
 	<TITLE>客户关系管理系统</TITLE>

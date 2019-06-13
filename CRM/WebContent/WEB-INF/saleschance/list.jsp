@@ -101,7 +101,7 @@
 					</th>
 				</tr>
 				
-				<c:forEach items="${list }" var="salechance">
+				<c:forEach items="${page.list }" var="salechance">
 					<tr>
 						<td class="list_data_number">${salechance.id }</td>
 						<td class="list_data_text">${salechance.custName }</td>
@@ -121,9 +121,9 @@
 				</c:forEach>
 			</table>
 <div style="text-align:right; padding:6px 6px 0 0;">
-	共 8 条记录 
+	共 ${page.totalRecord } 条记录 
 	&nbsp;&nbsp;
-	当前第 1 页/共 2 页
+	当前第 ${page.pageNo } 页/共 ${page.totalNumber } 页
 	&nbsp;&nbsp;
 		<a href='?page=2&sortType=&&'>下一页</a>
 		&nbsp;&nbsp;

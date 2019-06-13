@@ -199,7 +199,25 @@
 	1）需要借助于jQuery，取消get请求的默认行为。
 	2）添加一个form表单，再在form表单中添加一个隐藏域  隐藏域的键为_method  值为delete、put。
 
-
+15.分页（Page）：
+	1）为什么做分页？
+		当数据量大的时候，在一个页面展示不完，所以我们要做分页。
+	2）分页的作用：
+		1）减少服务器端的压力。
+		2）可以加快浏览器的查询速度，增强用户体验。
+	3）面向对象的语言，我们可以封装一个类，来显示分页信息：
+		Page类
+	4）前端分页 + 后端分页：
+		后端分页：
+			// 1.获取符合条件的总记录数
+			// 2.创建Page类对象
+			// 3.查询带了分页的数据列表，并设置到Page对象中。
+		前端分页：
+	
+	5）MySQL和Oracle的分页查询：
+		MySQL：SELECT * FROM 表 LIMIT 起始索引, pageSize;
+		Oracle：SELECT * FROM (select rownum rn, id, ...) temp WHERE rn >= 起始索引 AND rn < 终止索引
+		
 
 
 
