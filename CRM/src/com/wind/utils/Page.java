@@ -34,8 +34,9 @@ public class Page<T> {
 		*/
 		if (getTotalRecord() % getPageSize() == 0) {	// 如果总记录数 % 每页显示的条数 整除
 			return getTotalRecord() / getPageSize();
+		}else {
+			return getTotalRecord() / getPageSize() + 1;
 		}
-		return getTotalRecord() / getPageSize() + 1;
 	}
 	// 外界不能修改我的总页数，所以setTotalNumber不能留
 	/*public void setTotalNumber(int totalNumber) {
@@ -65,6 +66,12 @@ public class Page<T> {
 	}
 	
 	public int getPageNo() {
+		if (pageNo < 1) {	// 在首页时候点击上一页，pageNo=0
+			pageNo = 1;
+		}
+		if (pageNo > getTotalNumber()) {	// 在末页时候点击下一页，pageNo=总页数+1
+			pageNo = getTotalNumber();
+		}
 		return pageNo;
 	}
 	public void setPageNo(int pageNo) {

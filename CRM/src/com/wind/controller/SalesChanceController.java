@@ -24,13 +24,12 @@ public class SalesChanceController {
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String getSalesChance(String pageNo, ModelMap modeMap) {
 		int pageSize = 2;
-		pageNo = "1";
 		Page<SalesChance> page= salesChanceService.getList(pageNo, pageSize);
 		modeMap.addAttribute("page", page);
 		return "/saleschance/list";
 	}
 	
-	/*
+	/* 
 	 * 	添加修改的方法进来，判断id是否为空，为空时添加 不为空是修改
 	 */
 	@RequestMapping(value = {"/create"}, method = RequestMethod.GET)

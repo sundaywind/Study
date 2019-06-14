@@ -88,6 +88,6 @@
 		      	title
 		      from sales_chances
 		  	  where status = '1') temp
-		where rn >= #{firstIndex} and rn &lt; #{endIndex}
+		where rn &gt;= #{firstIndex} and rn &lt; #{endIndex}
 	</select>
 </mapper>

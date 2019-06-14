@@ -213,6 +213,31 @@
 			// 2.创建Page类对象
 			// 3.查询带了分页的数据列表，并设置到Page对象中。
 		前端分页：
+			模仿百度分页：10条显示5条
+			【1】	2	3	4	5
+			 1	     【2】	3	4	5
+			 1		2   【3】	4	5
+			 2	    3   【4】	5	6
+			 3	    4   【5】	6	7
+			 6	    7   8   【9】	10
+			 ======思路是======
+			 1）总页数是否大于（小于等于）5（总页数等于3的话 只能显示3页）
+			 	begin=1;
+			 	end = ${page.totalNumber}
+			 2）总页数大于5，分为两种情况：
+			 	1）如果当前页小于等于3
+			 		begin=1;
+			 		end = 5;
+			 	2）如果当前页大于3
+			 		begin=${page.pageNo - 2};
+			 		end = ${page.pageNo + 2};
+			 			如果${end > page.totalNumber}：
+			 				end = ${page.totalNumber};
+			 				begin=${page.pageNo - 4};
+			 	3）在首页点击上一页、末页点击下一页的Bug处理：
+			 		在Page类中判读设置pageNo的值。
+			 				
+			 	
 	
 	5）MySQL和Oracle的分页查询：
 		MySQL：SELECT * FROM 表 LIMIT 起始索引, pageSize;

@@ -121,7 +121,7 @@
 				</c:forEach>
 			</table>
 <div style="text-align:right; padding:6px 6px 0 0;">
-	共 ${page.totalRecord } 条记录 
+	<%-- 共 ${page.totalRecord } 条记录 
 	&nbsp;&nbsp;
 	当前第 ${page.pageNo } 页/共 ${page.totalNumber } 页
 	&nbsp;&nbsp;
@@ -130,9 +130,51 @@
 		<a href='?page=2&sortType=&&'>末页</a>
 		&nbsp;&nbsp;
 	转到 <input id="pageNo" size='1'/> 页
+	&nbsp;&nbsp; --%>
+	<a href="/CRM/saleschance/list?pageNo=1">首页</a>
 	&nbsp;&nbsp;
+	<a href="/CRM/saleschance/list?pageNo=${page.pageNo + 1}">下一页</a>
+	&nbsp;&nbsp;
+	
+	<c:choose>
+		<c:when test="${page.totalNumber <= 5}">
+			<!-- c:set标签可以把value里面的值附给var的变量并放入Scott域中 -->
+			<c:set var="begin" value="1"></c:set>
+			<c:set var = "end" value="${page.totalNumber}"></c:set>
+		</c:when>
+		<c:when test="${page.totalNumber <= 3}">
+			<c:set var="begin" value="1"></c:set>
+			<c:set var = "end" value="5"></c:set>
+		</c:when>
+		<c:when test="${page.totalNumber > 3}">
+			<c:set var="begin" value="${page.pageNo - 2}"></c:set>
+			<c:set var = "end" value="${page.pageNo + 2}"></c:set>
+			<c:if test="${end > page.totalNumber}">
+				<c:set var="begin" value="${end - 4}"></c:set>
+				<c:set var = "end" value="${page.totalNumber}"></c:set>
+			</c:if>
+		</c:when>
+	</c:choose>
+	<script type="text/javascript">
+		alert("${begin}");
+	</script>
+	
+	<c:forEach begin="${begin}" end="${end}" var="index">
+		<c:if test="${page.pageNo == index}">
+			<a href="/CRM/saleschance/list?pageNo=${index}"><font color="red">【${index}】</font></a>
+			&nbsp;&nbsp;
+		</c:if>
+		<c:if test="${page.pageNo != index}">
+			<a href="/CRM/saleschance/list?pageNo=${index}">${index}</a>
+			&nbsp;&nbsp;
+		</c:if>
+	</c:forEach>
+	
+	<a href="/CRM/saleschance/list?pageNo=${page.pageNo - 1}">上一页</a>
+	&nbsp;&nbsp;
+	<a href="/CRM/saleschance/list?pageNo=${page.totalNumber}">末页</a>
 </div>
-<script type="text/javascript" src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
+<%-- <script type="text/javascript" src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script type="text/javascript">
 	$(function(){
 		$("#pageNo").change(function(){
@@ -143,7 +185,6 @@
 				alert("输入的页码不合法");
 				return;
 			}
-			
 			var pageNo2 = parseInt(pageNo);
 			if(pageNo2 < 1 || pageNo2 > parseInt("2")){
 				$(this).val("");
@@ -154,7 +195,7 @@
 			window.location.href = window.location.pathname + "?page=" + pageNo2 + "&sortType=&&";
 		});
 	})
-</script>
+</script> --%>
 	</form>
 	
 </body>
