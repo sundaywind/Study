@@ -23,7 +23,7 @@ public class SalesChanceController {
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public String getSalesChance(String pageNo, ModelMap modeMap) {
-		int pageSize = 2;
+		int pageSize = 1;
 		Page<SalesChance> page= salesChanceService.getList(pageNo, pageSize);
 		modeMap.addAttribute("page", page);
 		return "/saleschance/list";

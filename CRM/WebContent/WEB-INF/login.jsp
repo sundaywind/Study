@@ -35,7 +35,7 @@ function doSubmit(){
 
 	
 
-	<form action="${ctx}/login" method="post">
+	<form action="/CRM/login" method="post">
 	
 		<TABLE WIDTH=800 BORDER=0 CELLPADDING=0 CELLSPACING=0>
 			<TR>

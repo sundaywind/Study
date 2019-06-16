@@ -32,6 +32,24 @@
 			});
 		});
 	</script>
+	
+	<!-- 
+		去超链接下划线 ：
+		    a:link 指正常的未被访问过的链接；
+		　　  a:active 指正在点的链接；
+		　　  a:hover 指鼠标在链接上；
+		　　  a:visited 指已经访问过的链接；
+		　　  text-decoration是文字修饰效果的意思；
+		　　  none参数表示超链接文字不显示下划线；
+		　  　underline参数表示超链接的文字有下划线
+	-->
+	<style type="text/css">
+		a {text-decoration: none}
+		a:link { text-decoration: none;color: blue}
+	　　 a:active { text-decoration:blink}
+	　　 a:hover { text-decoration:underline;color: red}
+	　　 a:visited { text-decoration: none;color: green}
+	</style>
 </head>
 
 <body class="main">
@@ -121,45 +139,40 @@
 				</c:forEach>
 			</table>
 <div style="text-align:right; padding:6px 6px 0 0;">
-	<%-- 共 ${page.totalRecord } 条记录 
+	共 ${page.totalRecord } 条记录 
 	&nbsp;&nbsp;
 	当前第 ${page.pageNo } 页/共 ${page.totalNumber } 页
 	&nbsp;&nbsp;
-		<a href='?page=2&sortType=&&'>下一页</a>
-		&nbsp;&nbsp;
-		<a href='?page=2&sortType=&&'>末页</a>
-		&nbsp;&nbsp;
 	转到 <input id="pageNo" size='1'/> 页
-	&nbsp;&nbsp; --%>
+	&nbsp;&nbsp;
+	
 	<a href="/CRM/saleschance/list?pageNo=1">首页</a>
 	&nbsp;&nbsp;
 	<a href="/CRM/saleschance/list?pageNo=${page.pageNo + 1}">下一页</a>
 	&nbsp;&nbsp;
 	
+	<!-- 这块好好理解一下 -->
 	<c:choose>
 		<c:when test="${page.totalNumber <= 5}">
 			<!-- c:set标签可以把value里面的值附给var的变量并放入Scott域中 -->
 			<c:set var="begin" value="1"></c:set>
 			<c:set var = "end" value="${page.totalNumber}"></c:set>
 		</c:when>
-		<c:when test="${page.totalNumber <= 3}">
+		<c:when test="${page.pageNo <= 3}">
 			<c:set var="begin" value="1"></c:set>
 			<c:set var = "end" value="5"></c:set>
 		</c:when>
-		<c:when test="${page.totalNumber > 3}">
+		<c:when test="${page.pageNo > 3}">
 			<c:set var="begin" value="${page.pageNo - 2}"></c:set>
 			<c:set var = "end" value="${page.pageNo + 2}"></c:set>
 			<c:if test="${end > page.totalNumber}">
-				<c:set var="begin" value="${end - 4}"></c:set>
 				<c:set var = "end" value="${page.totalNumber}"></c:set>
+				<c:set var="begin" value="${end - 4}"></c:set>
 			</c:if>
 		</c:when>
 	</c:choose>
-	<script type="text/javascript">
-		alert("${begin}");
-	</script>
 	
-	<c:forEach begin="${begin}" end="${end}" var="index">
+	<c:forEach begin="${begin }" end="${end}" var="index">
 		<c:if test="${page.pageNo == index}">
 			<a href="/CRM/saleschance/list?pageNo=${index}"><font color="red">【${index}】</font></a>
 			&nbsp;&nbsp;
@@ -174,6 +187,12 @@
 	&nbsp;&nbsp;
 	<a href="/CRM/saleschance/list?pageNo=${page.totalNumber}">末页</a>
 </div>
+
+<!-- 
+	原项目JS跳转代码 ：
+		1）pageNo用正整数正则验证，如果不是 直接return下面就不走了 打住。
+		2）输入的是字符串 转int，如果小于1则return。
+-->
 <%-- <script type="text/javascript" src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script type="text/javascript">
 	$(function(){
@@ -196,6 +215,25 @@
 		});
 	})
 </script> --%>
+
+<!-- 我写的JS跳转代码 -->
+<script type="text/javascript">
+	$(function(){
+		$("#pageNo").change(function(){
+			/* 1.获取pageNo中的值 */
+			var pageNo = $("#pageNo").val();
+			/* 2.正整数正则 */
+			var reg = /^[1-9]\d*$/;
+			/* 3.用正则验证 */
+			var verify = reg.test(pageNo);
+			if (!verify) {	// 如果验证为true 取反 跳过if，如果验证是false 取反则会进if判断。
+				alert("您输入的有误！");
+				return ;
+			}
+			window.location.href = "/CRM/saleschance/list?pageNo=" + pageNo;
+		})
+	})
+</script>
 	</form>
 	
 </body>
