@@ -148,9 +148,9 @@
 	转到 <input id="pageNo" size='1'/> 页
 	&nbsp;&nbsp;
 	
-	<a href="/CRM/saleschance/list?pageNo=1${searchStr}">首页</a>
+	<a href="${requestURI}?pageNo=1${searchStr}">首页</a>
 	&nbsp;&nbsp;
-	<a href="/CRM/saleschance/list?pageNo=${page.pageNo + 1}${searchStr}">下一页</a>
+	<a href="${requestURI}?pageNo=${page.pageNo + 1}${searchStr}">下一页</a>
 	&nbsp;&nbsp;
 	
 	<!-- 这块好好理解一下 -->
@@ -176,18 +176,18 @@
 	
 	<c:forEach begin="${begin }" end="${end}" var="index">
 		<c:if test="${page.pageNo == index}">
-			<a href="/CRM/saleschance/list?pageNo=${index}${searchStr}"><font color="red">【${index}】</font></a>
+			<a href="${requestURI}?pageNo=${index}${searchStr}"><font color="red">【${index}】</font></a>
 			&nbsp;&nbsp;
 		</c:if>
 		<c:if test="${page.pageNo != index}">
-			<a href="/CRM/saleschance/list?pageNo=${index}${searchStr}">${index}</a>
+			<a href="${requestURI}?pageNo=${index}${searchStr}">${index}</a>
 			&nbsp;&nbsp;
 		</c:if>
 	</c:forEach>
 	
-	<a href="/CRM/saleschance/list?pageNo=${page.pageNo - 1}${searchStr}">上一页</a>
+	<a href="${requestURI}?pageNo=${page.pageNo - 1}${searchStr}">上一页</a>
 	&nbsp;&nbsp;
-	<a href="/CRM/saleschance/list?pageNo=${page.totalNumber}${searchStr}">末页</a>
+	<a href="${requestURI}?pageNo=${page.totalNumber}${searchStr}">末页</a>
 </div>
 
 <!-- 
@@ -221,6 +221,8 @@
 <!--  
 	JavaScript只能取得页面上的值。
 	在JS中不能使用EL表达式取Controller的Model中的值，我们可以用隐藏域的方式取。
+	What Fuck!
+	JS中可以用Model中传过来的值，EL表达式取 但是要用引号包住！
 -->
 <input id="searchStr" type="hidden" value="${searchStr}"/>
 <!-- 我写的JS跳转代码 -->
@@ -238,7 +240,7 @@
 				alert("您输入的有误！");
 				return ;
 			};
-			window.location.href = "/CRM/saleschance/list?pageNo=" + pageNo + searchStr;
+			window.location.href = "${requestURI}?pageNo=" + pageNo + "${searchStr}";
 		})
 	})
 </script>

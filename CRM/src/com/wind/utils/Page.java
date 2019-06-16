@@ -9,7 +9,7 @@ public class Page<T> {
 	// private int totalNumber;	// 总页数，通过计算得到。
 	// private int index;		// 查询的起始索引，通过计算得到。
 	
-	private int pageSize;		// 每页显示的条数，前端传过来的。（自定义的 可以看成是由前端传过来的）
+	private int pageSize = 1;		// 每页显示的条数，前端传过来的。（自定义的 可以看成是由前端传过来的）
 	private int pageNo;			// 当前页，前端传过来的。
 	
 	public List<T> getList() {
@@ -82,10 +82,9 @@ public class Page<T> {
 		super();
 	}
 	
-	public Page(int totalRecord, int pageSize, int pageNo) {
+	public Page(int totalRecord, int pageNo) {
 		super();
 		this.totalRecord = totalRecord;
-		this.pageSize = pageSize;
 		this.pageNo = pageNo;
 	}
 	

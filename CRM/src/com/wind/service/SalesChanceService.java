@@ -26,7 +26,7 @@ public class SalesChanceService {
 		// 1.获取符合条件的总记录数
 		int totalRecord = salesChanceMapper.getTotalRecord(map);
 		// 2.创建Page类对象
-		Page<SalesChance> page = new Page<SalesChance>(totalRecord, Integer.parseInt(map.get("pageSize").toString()), pageNum);
+		Page<SalesChance> page = new Page<SalesChance>(totalRecord, pageNum);
 		// 3.查询带了分页的数据列表，并设置到Page对象中。
 		int firstIndex = page.getIndex() + 1;
 		int endIndex = firstIndex + page.getPageSize();

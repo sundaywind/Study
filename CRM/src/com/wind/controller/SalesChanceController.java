@@ -29,8 +29,6 @@ public class SalesChanceController {
 	 */
 	@RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
 	public String getSalesChance(HttpServletRequest request, ModelMap modeMap, String pageNo) {
-		int pageSize = 1;
-		
 		/*
 			优化1：
 			方法参数太多，可以用Spring自带的工具类获取：（以什么开始）
@@ -46,7 +44,13 @@ public class SalesChanceController {
 		*/
 		Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
 		map.put("pageNo", pageNo);
-		map.put("pageSize", pageSize);
+		
+		/*
+			System.out.println(requestURI);	// /CRM/saleschance/list
+			System.out.println(requestURL);	// http://localhost:8080/CRM/saleschance/list
+			注意：如果是get请求 /CRM/saleschance/list?pageNo=3; 要从？那截串
+		*/
+		String requestURI = request.getRequestURI();
 		
 		Page<SalesChance> page= salesChanceService.getList(map);
 		modeMap.addAttribute("page", page);
@@ -72,6 +76,7 @@ public class SalesChanceController {
 		*/
 		String str = toPageSearchString(map);
 		modeMap.addAttribute("searchStr", str);
+		modeMap.addAttribute("requestURI", requestURI);
 		return "/saleschance/list";
 	}
 	
