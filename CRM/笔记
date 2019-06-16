@@ -269,6 +269,7 @@
 			}
 
 18.JavaScript只能取得页面上的值，在JS中不能使用EL表达式取Controller的Model中的值，我们可以用隐藏域的方式取：
+	（Fuck! JS中可以用Model中传过来的值，EL表达式取 但是要用引号包住！）
 	1）写一个隐藏域：
 		<input id="searchStr" type="hidden" value="${searchStr}"/>
 	2）在JS中取值：
@@ -282,7 +283,7 @@
 				})
 			})
 		</script>
-
+	
 
 
 
