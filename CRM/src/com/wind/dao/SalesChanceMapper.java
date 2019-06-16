@@ -1,8 +1,7 @@
 package com.wind.dao;
 
 import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
+import java.util.Map;
 
 import com.wind.bean.SalesChance;
 
@@ -17,8 +16,8 @@ public interface SalesChanceMapper {
 
 	int saveSalesChance(SalesChance salesChance);
 
-	int getTotalRecord();
+	int getTotalRecord(Map<String, Object> map);
 
-	List<SalesChance> getPageList(@Param("firstIndex")int firstIndex, @Param("endIndex")int endIndex);
+	List<SalesChance> getPageList(Map<String, Object> map);
 
 }

@@ -53,6 +53,7 @@
 </head>
 
 <body class="main">
+	<!-- form表单的作用只是用来提交数据 -->
 	<form action="#" method="post">
 		<input id="dd" type="hidden" name="_method" value=""/>
 	</form>
@@ -90,6 +91,7 @@
 				</td>
 			</tr>
 		</table>
+	</form>
 		<%-- <sys:message content="${message}"/> --%>
 		${message}
 		<!-- 列表数据 -->
@@ -146,9 +148,9 @@
 	转到 <input id="pageNo" size='1'/> 页
 	&nbsp;&nbsp;
 	
-	<a href="/CRM/saleschance/list?pageNo=1">首页</a>
+	<a href="/CRM/saleschance/list?pageNo=1${searchStr}">首页</a>
 	&nbsp;&nbsp;
-	<a href="/CRM/saleschance/list?pageNo=${page.pageNo + 1}">下一页</a>
+	<a href="/CRM/saleschance/list?pageNo=${page.pageNo + 1}${searchStr}">下一页</a>
 	&nbsp;&nbsp;
 	
 	<!-- 这块好好理解一下 -->
@@ -174,18 +176,18 @@
 	
 	<c:forEach begin="${begin }" end="${end}" var="index">
 		<c:if test="${page.pageNo == index}">
-			<a href="/CRM/saleschance/list?pageNo=${index}"><font color="red">【${index}】</font></a>
+			<a href="/CRM/saleschance/list?pageNo=${index}${searchStr}"><font color="red">【${index}】</font></a>
 			&nbsp;&nbsp;
 		</c:if>
 		<c:if test="${page.pageNo != index}">
-			<a href="/CRM/saleschance/list?pageNo=${index}">${index}</a>
+			<a href="/CRM/saleschance/list?pageNo=${index}${searchStr}">${index}</a>
 			&nbsp;&nbsp;
 		</c:if>
 	</c:forEach>
 	
-	<a href="/CRM/saleschance/list?pageNo=${page.pageNo - 1}">上一页</a>
+	<a href="/CRM/saleschance/list?pageNo=${page.pageNo - 1}${searchStr}">上一页</a>
 	&nbsp;&nbsp;
-	<a href="/CRM/saleschance/list?pageNo=${page.totalNumber}">末页</a>
+	<a href="/CRM/saleschance/list?pageNo=${page.totalNumber}${searchStr}">末页</a>
 </div>
 
 <!-- 
@@ -216,10 +218,16 @@
 	})
 </script> --%>
 
+<!--  
+	JavaScript只能取得页面上的值。
+	在JS中不能使用EL表达式取Controller的Model中的值，我们可以用隐藏域的方式取。
+-->
+<input id="searchStr" type="hidden" value="${searchStr}"/>
 <!-- 我写的JS跳转代码 -->
 <script type="text/javascript">
 	$(function(){
 		$("#pageNo").change(function(){
+			var searchStr = $("#searchStr").val();
 			/* 1.获取pageNo中的值 */
 			var pageNo = $("#pageNo").val();
 			/* 2.正整数正则 */
@@ -229,12 +237,11 @@
 			if (!verify) {	// 如果验证为true 取反 跳过if，如果验证是false 取反则会进if判断。
 				alert("您输入的有误！");
 				return ;
-			}
-			window.location.href = "/CRM/saleschance/list?pageNo=" + pageNo;
+			};
+			window.location.href = "/CRM/saleschance/list?pageNo=" + pageNo + searchStr;
 		})
 	})
 </script>
-	</form>
 	
 </body>
 </html>

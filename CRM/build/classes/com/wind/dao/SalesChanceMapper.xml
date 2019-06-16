@@ -68,9 +68,39 @@
 	</insert>
 	
 	<select id="getTotalRecord" resultType="_int">
-		select count(1) from sales_chances where status = '1'
+		select count(1) from sales_chances
+		<include refid="like_SQL"/>
 	</select>
 	
+	<!-- SQL片段 -->
+	<sql id="like_SQL">
+		<where> status = '1'
+			<!-- 有可能不传查询条件，也可能查询一个 货 多个，所以不能写死 -->
+			<!-- 
+				 模糊查询LIKE通配符的几种方式：
+				 	（1）% ：零或者多个字符：
+				 		SELECT * FROM [user] WHERE uname LIKE ‘%三%’ 
+						搜索结果：“张三”，“小三”、“三脚猫”，“猫三脚” 有“三” 的记录全找出来。 
+				 	（2）_： 单一任何字符（下划线）常用来限制表达式的字符长度语句：
+				 		SELECT * FROM [user] WHERE uname LIKE ‘三__’; 
+						搜索结果：“三脚猫”这样uname为三个字符且第一个是“三”的；
+				 	（3）[]：在某一范围内的字符，表示括号内所列字符中的一个（类似正则表达式）。指定一个字符、字符串或范围，要求所匹配对象为它们中的任一个：
+				 		SELECT * FROM [user] WHERE u_name LIKE ‘[张李王]三’ 
+						搜索结果：“张三”、“李三”、“王三”（而不是“张李王三”）； 
+				 	（4）[^]： 不在某范围内的字符，用法与[ ]相反。
+			-->
+			<!-- 方法中的Map取值：直接用Key 不用map.Key取 -->
+			<if test="LIKE_custName != null and LIKE_custName != ''">
+				AND cust_name LIKE CONCAT(CONCAT('%', #{LIKE_custName}), '%')
+			</if>
+			<if test="LIKE_title != null and LIKE_title != ''">
+				AND title LIKE CONCAT(CONCAT('%', #{LIKE_title}), '%')
+			</if>
+			<if test="LIKE_contact != null and LIKE_contact != ''">
+				AND contact LIKE CONCAT(CONCAT('%', #{LIKE_contact}), '%')
+			</if>
+		</where>
+	</sql>
 	<select id="getPageList" resultType="com.wind.bean.SalesChance">
 		select *
 		from (select 
@@ -87,7 +117,9 @@
 		      	status,
 		      	title
 		      from sales_chances
-		  	  where status = '1') temp
+		      <!-- SQL片段引用 -->
+		      <include refid="like_SQL"/>
+		  	  ) temp
 		where rn &gt;= #{firstIndex} and rn &lt; #{endIndex}
 	</select>
 </mapper>

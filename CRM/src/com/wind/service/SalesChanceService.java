@@ -1,6 +1,7 @@
 package com.wind.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,19 +18,21 @@ public class SalesChanceService {
 	private SalesChanceMapper salesChanceMapper;
 	
 	@Transactional(readOnly = true)
-	public Page<SalesChance> getList(String pageNo, int pageSize) {
+	public Page<SalesChance> getList(Map<String, Object> map) {
 		int pageNum = 1;
 		try {
-			pageNum = Integer.parseInt(pageNo);
+			pageNum = Integer.parseInt(map.get("pageNo").toString());
 		} catch (Exception e) {	}
 		// 1.获取符合条件的总记录数
-		int totalRecord = salesChanceMapper.getTotalRecord();
+		int totalRecord = salesChanceMapper.getTotalRecord(map);
 		// 2.创建Page类对象
-		Page<SalesChance> page = new Page<SalesChance>(totalRecord, pageSize, pageNum);
+		Page<SalesChance> page = new Page<SalesChance>(totalRecord, Integer.parseInt(map.get("pageSize").toString()), pageNum);
 		// 3.查询带了分页的数据列表，并设置到Page对象中。
 		int firstIndex = page.getIndex() + 1;
 		int endIndex = firstIndex + page.getPageSize();
-		List<SalesChance> list = salesChanceMapper.getPageList(firstIndex, endIndex);
+		map.put("firstIndex", firstIndex);
+		map.put("endIndex", endIndex);
+		List<SalesChance> list = salesChanceMapper.getPageList(map);
 		page.setList(list);
 		return page;
 	}
