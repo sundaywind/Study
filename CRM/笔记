@@ -295,7 +295,7 @@
 		权限信息一般包括（id, displayName, parentAuthority, URL, List<Authority> subAuthorities）
 			User ---> role ---> authories ---> parentAuthority
 			User ---> role ---> List<Authority> ---> Authority
-
+			
 
 
 

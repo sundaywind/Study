@@ -44,7 +44,6 @@ public class SalesChanceController {
 		*/
 		Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
 		map.put("pageNo", pageNo);
-		System.out.println(map.get("LIKE_title"));
 		/*
 			System.out.println(requestURI);	// /CRM/saleschance/list
 			System.out.println(requestURL);	// http://localhost:8080/CRM/saleschance/list
