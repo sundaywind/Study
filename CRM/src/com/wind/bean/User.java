@@ -83,4 +83,11 @@ public class User extends IdEntity{
 		
 		return roles;
 	}
+
+	@Override
+	public String toString() {
+		return "User [name=" + name + ", password=" + password + ", enabled=" + enabled + ", salt=" + salt + ", role="
+				+ role + "]";
+	}
+	
 }

@@ -25,14 +25,14 @@
 					// alert(node.text);
 					// 点击当前JSON节点中的attributes集合中的url值！
 					// alert(node.attributes.url)
-					if (node.attributes.url) {	
+					if (node.url) {	
 						// 如果node.attributes.url不为空，通过引用tree.jsp的父节点 去替换success.jsp页面中的welcome.jsp页面。（更换url）
 						/*  
 							window：当前窗口（tree.jsp）
 							window.parent：因为tree.jsp被引用到success.jsp的一部分，所以在success.jsp页面中查看 tree.jsp 的parent是success.jsp的14行
 							window.parent.doucument：success.jsp的14行 文档。
 						*/
-						window.parent.document.getElementById("content").src = node.attributes.url;
+						window.parent.document.getElementById("content").src = node.url;
 					}
 				}
 			})
@@ -42,6 +42,6 @@
 <body>
 	<div style="margin:10px 0;"></div>
 	<!-- data-options：url（发送请求）、,method：get方法、animate：动画 -->
-	<ul id="tt" class="easyui-tree" data-options="url:'${pageContext.request.contextPath}/commons/tree_data1.json',method:'get',animate:true"></ul>
+	<ul id="tt" class="easyui-tree" data-options="url:'${pageContext.request.contextPath}/menuNav',method:'get',animate:true"></ul>
 </body>
 </html>

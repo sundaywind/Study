@@ -8,15 +8,11 @@
 		"children":[{
 			"id":111,
 			"text":"营销机会管理",
-			"attributes":{
-				"url":"/CRM/saleschance/list"
-			}
+			"url":"/CRM/saleschance/list"
 		},{
 			"id":112,
 			"text":"客户开发计划",
-			"attributes":{
-				"url":"/deom/book/123"
-			}
+			"url":"/deom/book/123"
 		}]
 	},{
 		"id":12,

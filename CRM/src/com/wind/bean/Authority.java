@@ -11,7 +11,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -99,6 +98,7 @@ public class Authority extends IdEntity{
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
+		return "Authority [displayName=" + displayName + ", name=" + name + ", permissions=" + permissions
+				+ ", parentAuthority=" + parentAuthority + ", url=" + url + ", subAuthorities=" + subAuthorities + "]";
 	}
 }

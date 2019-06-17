@@ -102,5 +102,10 @@ public class Role extends IdEntity {
 		this.users = users;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "Role [name=" + name + ", description=" + description + ", enabled=" + enabled + ", authorities="
+				+ authorities + ", users=" + users + "]";
+	}
+
 }

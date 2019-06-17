@@ -284,8 +284,17 @@
 			})
 		</script>
 	
-
-
+19.原导航栏的问题：
+	1)所有的员工看到的界面都是一样的（JSON文件写死了！）
+	2)JSON文件（静态资源）存在缓存问题，数据有时不同步！
+	
+20.动态导航栏：
+	1）用户登录成功时，我们就要将用户的信息、角色信息及对应的权限信息查出来。
+		用户信息一般包括（id, userName, passWord, roleId, salt）
+		角色信息一般包括（id, roleName, List<Authority> authorities, Set<User> users）
+		权限信息一般包括（id, displayName, parentAuthority, URL, List<Authority> subAuthorities）
+			User ---> role ---> authories ---> parentAuthority
+			User ---> role ---> List<Authority> ---> Authority
 
 
 

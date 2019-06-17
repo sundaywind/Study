@@ -12,6 +12,21 @@ public class Page<T> {
 	private int pageSize = 1;		// 每页显示的条数，前端传过来的。（自定义的 可以看成是由前端传过来的）
 	private int pageNo;			// 当前页，前端传过来的。
 	
+	private String path;		// 返回给前端页面的URI
+	private String searchStr;	// 返回给前端页面的查询条件
+	
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
+	}
+	public String getSearchStr() {
+		return searchStr;
+	}
+	public void setSearchStr(String searchStr) {
+		this.searchStr = searchStr;
+	}
 	public List<T> getList() {
 		return list;
 	}

@@ -19,7 +19,7 @@ import com.wind.service.SalesChanceService;
 import com.wind.utils.Page;
 
 @Controller
-@RequestMapping(value = "/saleschance")
+@RequestMapping(value = "/chance")
 public class SalesChanceController {
 
 	@Autowired
@@ -44,17 +44,16 @@ public class SalesChanceController {
 		*/
 		Map<String, Object> map = WebUtils.getParametersStartingWith(request, "search_");
 		map.put("pageNo", pageNo);
-		
+		System.out.println(map.get("LIKE_title"));
 		/*
 			System.out.println(requestURI);	// /CRM/saleschance/list
 			System.out.println(requestURL);	// http://localhost:8080/CRM/saleschance/list
 			注意：如果是get请求 /CRM/saleschance/list?pageNo=3; 要从？那截串
 		*/
-		String requestURI = request.getRequestURI();
-		
 		Page<SalesChance> page= salesChanceService.getList(map);
+		page.setSearchStr(toPageSearchString(map));
+		page.setPath(request.getRequestURI());
 		modeMap.addAttribute("page", page);
-		
 		/*
 			条件查询点下一页上一页的时候 查询条件就跑了，是因为查询条件没带到页面去：
 				1）刚开始想的是在页面拼接查询参数，那很麻烦。
@@ -74,9 +73,6 @@ public class SalesChanceController {
 							}
 						}
 		*/
-		String str = toPageSearchString(map);
-		modeMap.addAttribute("searchStr", str);
-		modeMap.addAttribute("requestURI", requestURI);
 		return "/saleschance/list";
 	}
 	
@@ -118,7 +114,7 @@ public class SalesChanceController {
 		}else {
 			addMessage(redirectAttributes, "添加失败！");
 		}
-		return "redirect:/saleschance/list";
+		return "redirect:/chance/list";
 	}
 	
 	/*
@@ -134,7 +130,7 @@ public class SalesChanceController {
 		}else {
 			addMessage(redirectAttributes, "删除失败！");
 		}
-		return "redirect:/saleschance/list";
+		return "redirect:/chance/list";
 	}
 	
 	/**

@@ -3,14 +3,53 @@
 <mapper namespace="com.wind.dao.LoginMapper">
     
     <!-- 别名最好加双引号，遇到有点的（.）可能会出问题！ -->
-	<select id="verifyUserLogin" resultType="com.wind.bean.User">
-		SELECT 
-			a.id AS "id", 
-			a.name AS "name", 
-			a.password AS "password", 
-			b.name AS "role.name"
-		FROM users a 
-			LEFT JOIN roles b ON b.id = a.role_id 
-		WHERE a.name = #{name} and a.password = #{pwd}
+    <!-- <resultMap type="com.wind.bean.User" id="verifyUserLoginResultMap">
+    	<id column="id" property="id"/>
+    	<result column="name" property="name"/>
+    	<result column="password" property="password"/>
+    	<association property="role" javaType="com.wind.bean.Role">
+    		<result column="rname" property="name"/>
+    		<collection property="authorities" javaType="com.wind.bean.Authority">
+				<id column="id" property="id"/>
+				<result column="adisplay_name" property="displayName"/>
+				<result column="aurl" property="url"/>
+				<result column="parentAuthority.pid" property="id"/>
+				<result column="parentAuthority.padisplay_name" property="displayName"/>
+			</collection>
+    	</association>
+    </resultMap>
+	<select id="verifyUserLogin" resultMap="verifyUserLoginResultMap">
+		select u.id, u.name, u.password, r.name rname, pa.id pid, pa.display_name padisplay_name,a.id, a.display_name adisplay_name, a.url aurl
+		from users u
+		     left join roles r on r.id = u.role_id
+		     left join role_authority ra on ra.role_id = r.id
+		     left join authorities a on a.id = ra.authority_id
+		     left join authorities pa on pa.id = a.parent_authority_id
+		where u.name = #{name} and u.password = #{pwd}
+	</select> -->
+	<resultMap type="com.wind.bean.User" id="verifyUserLoginResultMap">
+		<id column="id" property="id"/>
+		<result column="enabled" property="enabled"/>
+    	<result column="name" property="name"/>
+    	<result column="password" property="password"/>
+    	<result column="rid" property="role.id"/>
+    	<result column="rname" property="role.name"/>
+    	<collection property="role.authorities" javaType="com.wind.bean.Authority">
+    		<id column="aid" property="id"/>
+    		<result column="a_display_name" property="displayName"/>
+    		<result column="url" property="url"/>
+    		<result column="pid" property="parentAuthority.id"/>
+    		<result column="display_name" property="parentAuthority.displayName"/>
+    	</collection>
+	</resultMap>
+	<select id="verifyUserLogin" resultMap="verifyUserLoginResultMap">
+		select u.id, u.enabled, u.name, u.password, r.id rid, r.name rname, a.id aid, a.display_name a_display_name, a.url, pa.id pid, pa.display_name
+		from users u
+		     left outer join roles r on r.id = u.role_id
+		     left outer join role_authority ra on ra.role_id = r.id
+		     left outer join authorities a on a.id = ra.authority_id
+		     left outer join authorities pa on pa.id = a.parent_authority_id
+		where u.name = #{name} and u.password = #{pwd}
 	</select>
 </mapper>
+
