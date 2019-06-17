@@ -87,14 +87,18 @@ public class LoginController {
 		for (Authority authority : authorities) {
 			Navigation sonNavigation = new Navigation(authority.getId(), authority.getDisplayName());// 子权限对象
 			sonNavigation.setUrl(contextPath + authority.getUrl());					// 给子权限的URL属性赋值
-			Authority parentAuthority = authority.getParentAuthority(); // 当前登录用户的权限获取它的父权限
+			// 当前登录用户的所有权限中获取它的父权限
+			Authority parentAuthority = authority.getParentAuthority(); 
 			Long id = parentAuthority.getId(); 							// 拿到父权限的ID
 			Navigation parentNavigation = parentNavigations.get(id);	// 通过遍历的id，看看有没有id对应的父权限。
-			if (parentNavigation == null) {								// 如果为空 说明Map里面没有父权限的id对应的父权限
-				parentNavigation = new Navigation(id, parentAuthority.getDisplayName());	// 把它创建出来id还是从当前登录用户的父权限的id，text是当前登录用户的权限的名字
+			// 如果为空 说明Map里面没有父权限的id对应的父权限
+			if (parentNavigation == null) {	
+				// 创建父权限的导航信息（ id还是从当前登录用户的父权限的id，text是当前登录用户的权限的名字）
+				parentNavigation = new Navigation(id, parentAuthority.getDisplayName());	
 				parentNavigation.setState("closed");					// 将父导航栏设置为关闭
-				parentNavigations.put(id, parentNavigation);			// 放入到Map中
-				// 把父导航栏加入到List中（是给顶级后面加孩子）
+				// 放入到Map中
+				parentNavigations.put(id, parentNavigation);			
+				// 把放入Map中的父导航栏信息加入到List中（是给顶级后面加孩子）
 				top.getChildren().add(parentNavigation);
 			}
 			// 把子权限的信息加入到父导航栏中

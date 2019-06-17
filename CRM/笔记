@@ -289,14 +289,48 @@
 	2)JSON文件（静态资源）存在缓存问题，数据有时不同步！
 	
 20.动态导航栏：
-	1）用户登录成功时，我们就要将用户的信息、角色信息及对应的权限信息查出来。
-		用户信息一般包括（id, userName, passWord, roleId, salt）
-		角色信息一般包括（id, roleName, List<Authority> authorities, Set<User> users）
-		权限信息一般包括（id, displayName, parentAuthority, URL, List<Authority> subAuthorities）
-			User ---> role ---> authories ---> parentAuthority
-			User ---> role ---> List<Authority> ---> Authority
-			
-
+	1）用户登录成功时，我们从HttpSession中将用户的信息、角色信息及对应的权限信息获取出来。
+		用户信息一般包括（id, 登录名, 密码, 角色id, salt）
+		角色信息一般包括（id, 角色名, List<Authority> authorities权限集合, Set<User> users）
+		权限信息一般包括（id, 权限名, parentAuthority父权限, URL子权限的请求地址, List<Authority> subAuthorities子权限集合）
+     		select u.id, u.enabled, u.name, u.password, r.id rid, r.name rname, a.id aid, a.display_name a_display_name, a.url, pa.id pid, pa.display_name
+			from users u
+			     left outer join roles r on r.id = u.role_id
+			     left outer join role_authority ra on ra.role_id = r.id
+			     left outer join authorities a on a.id = ra.authority_id
+			     left outer join authorities pa on pa.id = a.parent_authority_id
+			where u.name = #{name} and u.password = #{pwd}
+	2）创建导航类的List集合，再将顶级导航栏加入到List集合中。（到这一步 顶级导航栏就出来了！）
+		// List转化为JSON数据后就是一个JSON数组
+		List<Navigation> list = new ArrayList<Navigation>();
+		// 先从最外层开始 最大的数组（先把顶级的导航栏加入到List列表中）
+		Navigation top = new Navigation(Long.MAX_VALUE, "客户关系管理系统"); // 为防止id和下面的子id冲突，我们将id设置为最大值。
+		list.add(top);
+	3）创建一个Map集合，用于存放父权限的导航信息。
+		Map<Long, Navigation> parentNavigations = new HashMap<Long, Navigation>();
+	3）获取当前用户的所有权限，并遍历  将父权限信息加入到List集合中。（到这一步 父导航栏就出来了！）
+		List<Authority> authorities = user.getRole().getAuthorities();
+		// 遍历从Session中获取的权限信息
+		for (Authority authority : authorities) {
+			// 当前登录用户的所有权限中获取它的父权限
+			Authority parentAuthority = authority.getParentAuthority(); 
+			Long id = parentAuthority.getId(); 							// 拿到父权限的ID
+			Navigation parentNavigation = parentNavigations.get(id);	// 通过遍历的id，看看有没有id对应的父权限。
+			// 如果为空 说明Map里面没有父权限的id对应的父权限
+			if (parentNavigation == null) {	
+				// 创建父权限的导航信息（ id还是从当前登录用户的父权限的id，text是当前登录用户的权限的名字）
+				parentNavigation = new Navigation(id, parentAuthority.getDisplayName());	
+				parentNavigation.setState("closed");					// 将父导航栏设置为关闭
+				// 放入到Map中
+				parentNavigations.put(id, parentNavigation);			
+				// 把放入Map中的父导航栏信息加入到List中（是给顶级后面加孩子）
+				top.getChildren().add(parentNavigation);
+			}
+	4）根据当前用户的权限，构建当前用户的子导航对象，并设置请求的URL。（在遍历中）
+		Navigation sonNavigation = new Navigation(authority.getId(), authority.getDisplayName());// 子权限对象
+		sonNavigation.setUrl(contextPath + authority.getUrl());									 // 给子权限的URL属性赋值
+	5）把子权限的信息加入到父导航栏中（遍历完后）。（到这一步 3级都构建完毕！）
+		parentNavigation.getChildren().add(sonNavigation);
 
 
 
