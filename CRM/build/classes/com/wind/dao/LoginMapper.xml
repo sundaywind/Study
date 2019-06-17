@@ -52,4 +52,3 @@
 		where u.name = #{name} and u.password = #{pwd}
 	</select>
 </mapper>
-
