@@ -1,5 +1,6 @@
 package com.wind.controller;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.WebUtils;
 
 import com.wind.bean.SalesChance;
+import com.wind.bean.User;
 import com.wind.service.SalesChanceService;
 import com.wind.utils.Page;
 
@@ -24,6 +26,7 @@ public class SalesChanceController {
 
 	@Autowired
 	private SalesChanceService salesChanceService;
+	
 	/*
 	 * 	用请求方式来表示对资源请求的处理，REST风格。
 	 */
@@ -72,7 +75,7 @@ public class SalesChanceController {
 							}
 						}
 		*/
-		return "/saleschance/list";
+		return "/chance/list";
 	}
 	
 	private String toPageSearchString(Map<String, Object> map) {
@@ -98,7 +101,7 @@ public class SalesChanceController {
 			SalesChance salesChance = salesChanceService.getSalesChanceById(id);
 			model.addAttribute("salesChance", salesChance);
 		}
-		return "/saleschance/form";
+		return "/chance/form";
 	}
 	
 	// 保存方法
@@ -132,6 +135,33 @@ public class SalesChanceController {
 		return "redirect:/chance/list";
 	}
 	
+	/**
+	 * 	去指派页面
+	 */
+	@RequestMapping(value = "/dispatch", method = RequestMethod.GET)
+	public String toDispatch(String id, Model model) {
+		// 获取所有用户
+		List<User> users = salesChanceService.getUsers();
+		// 根据id获取对应的类中的值
+		SalesChance chance = salesChanceService.getChangeById(id);
+		model.addAttribute("chance", chance);
+		model.addAttribute("users", users);
+		return "/chance/dispatch";
+	}
+	/**
+	 * 	指派保存
+	 */
+	@RequestMapping(value = "/saveDispatch", method = RequestMethod.POST)
+	public String saveDispatch(SalesChance chance, Model model) {
+		chance.setStatus(2);
+		int counts = salesChanceService.saveDispatch(chance);
+		if (counts <= 0) {
+			model.addAttribute("msg", "指派异常");
+			return "redirect:/chance/dispatch";
+		}
+		model.addAttribute("msg", "指派成功");
+		return "redirect:/chance/list";
+	}
 	/**
 	 * 添加Flash消息
 	 * @param message

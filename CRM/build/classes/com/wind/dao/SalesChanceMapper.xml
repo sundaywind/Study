@@ -122,4 +122,45 @@
 		  	  ) temp
 		where rn &gt;= #{firstIndex} and rn &lt; #{endIndex}
 	</select>
+	
+	<!-- List<User> getUsers(); -->
+	<select id="getUsers" resultType="com.wind.bean.User">
+		select 
+			id, 
+			enabled, 
+			name, 
+			password, 
+			role_id "role.id", 
+			salt 
+		from users
+	</select>
+	
+	<!-- SalesChance getChangeById(String id); -->
+	<select id="getChangeById" resultType="com.wind.bean.SalesChance">
+		select 
+			id, 
+			contact, 
+			contact_tel AS "contactTel", 
+			create_date AS "createDate", 
+			cust_name AS "custName", 
+			description, 
+			designee_date AS "designeeDate", 
+			rate, 
+			source, 
+			status, 
+			title, 
+			created_user_id AS "createBy.id", 
+			designee_id AS "designee.id"
+		from sales_chances
+		where id = #{id}
+	</select>
+	
+	<!-- int saveDispatch(SalesChance chance); -->
+	<update id="saveDispatch">
+		update sales_chances
+		  set status = #{status},
+		      designee_date = #{designeeDate},
+		      designee_id = #{designee.id}
+		where id = #{id}
+	</update>
 </mapper>

@@ -2,6 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wind.dao.PlanMapper">
     
-    
+	<!-- List<SalesChance> getList(); -->
+	<select id="getListByUserId" resultType="com.wind.bean.SalesChance">
+		select *
+		from (
+			select 
+				rownum rn,
+				id,
+				contact,
+				contact_tel AS "contactTel",
+				create_date AS "createDate",
+				cust_name AS "custName",
+				description,
+				designee_date AS "designeeDate",
+				rate,
+				source,
+				status,
+				title
+			from sales_chances
+			where status = '2' and designee_id = #{id}
+				) temp
+		where rn &gt;= #{firstIndex} and rn &lt; #{endIndex}
+	</select>
+	
+	<!-- int getTotalRecord(Long id); -->
+	<select id="getTotalRecord" resultType="_int">
+		select count(1) from sales_chances where status = '2' and designee_id = #{id}
+	</select>
 </mapper>
 

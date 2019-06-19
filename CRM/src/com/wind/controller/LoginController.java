@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,12 +37,15 @@ public class LoginController {
 	private LoginService loginService;
 	
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public String goHome(@RequestParam(value = "username")String name, @RequestParam("password")String pwd, Model model, RedirectAttributes  addAttribute, HttpSession session) {
+	public String goHome(@RequestParam(value = "username")String name, @RequestParam("password")String pwd, 
+			Model model, RedirectAttributes  addAttribute, HttpServletRequest request) {
 		if (name != null && name != "" && pwd != null && pwd != "") {
 			User user = loginService.verifyUserLogin(name, pwd);
 			if (user != null) {
 				model.addAttribute("msg", "登陆成功！");
-				session.setAttribute("user", user);
+				//session.setAttribute("user", user);
+				 HttpSession session = request.getSession();
+				 session.setAttribute("user", user);
 				return "view/success";
 			}
 		}

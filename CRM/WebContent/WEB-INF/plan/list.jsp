@@ -35,31 +35,36 @@
 			<th>状态</th>
 			<th>操作</th>
 		</tr>
-		<tr>
-			<td class="list_data_number">625</td>
-			<td class="list_data_text">邓紫棋</td>
-			<td class="list_data_text">底盘稳</td>
-			<td class="list_data_text">魏卫浩</td>
-			<td class="list_data_text">18791477541</td>
-			<td class="list_data_text">2019-06-12</td>
-			<td class="list_data_text">
-				<script type="text/javascript">
-					switch ('2') {
-						case '2':document.write('开发中');
-						break;
-						case '3':document.write('开发成功');
-						break;
-						case '4':document.write('开发失败');
-						break;
-					}
-				</script>
-			</td>
-			<td class="list_data_op">
-			<img onclick="window.location.href='${ctx}/plan/make?id=625'" title="制定计划" src="${ctxStatic}/images/bt_plan.gif" class="op_button" /> 
-			<img onclick="window.location.href='${ctx}/plan/execution?id=625'" title="执行计划" src="${ctxStatic}/images/bt_feedback.gif" class="op_button" /> 
-			<img onclick="window.location.href='${ctx}/chance/finish?id=625'" title="开发成功" src="${ctxStatic}/images/bt_yes.gif" class="op_button" />
-			</td>
-		</tr>
+		<c:forEach items="${page.list}" var="plan">
+			<tr>
+				<td class="list_data_number">${plan.id}</td>
+				<td class="list_data_text">${plan.custName}</td>
+				<td class="list_data_text">${plan.title}</td>
+				<td class="list_data_text">${plan.contact}</td>
+				<td class="list_data_text">${plan.contactTel}</td>
+				<td class="list_data_text">
+					<fmt:formatDate value="${plan.designeeDate}" pattern="yyyy-MM-dd"/>
+				</td>
+				<td class="list_data_text">
+					<script type="text/javascript">
+						switch ('2') {
+							case '2':document.write('开发中');
+							break;
+							case '3':document.write('开发成功');
+							break;
+							case '4':document.write('开发失败');
+							break;
+						}
+					</script>
+				</td>
+				<td class="list_data_op">
+					<img onclick="window.location.href='${ctx}/plan/make?id=625'" title="制定计划" src="${ctxStatic}/images/bt_plan.gif" class="op_button" /> 
+					<img onclick="window.location.href='${ctx}/plan/execution?id=625'" title="执行计划" src="${ctxStatic}/images/bt_feedback.gif" class="op_button" /> 
+					<img onclick="window.location.href='${ctx}/chance/finish?id=625'" title="开发成功" src="${ctxStatic}/images/bt_yes.gif" class="op_button" />
+				</td>
+			</tr>
+		</c:forEach>
 	</table>
+<%@ include file="/WEB-INF/page/page.jsp" %>
 </body>
 </html>

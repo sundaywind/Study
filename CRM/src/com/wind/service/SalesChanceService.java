@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.wind.bean.SalesChance;
+import com.wind.bean.User;
 import com.wind.dao.SalesChanceMapper;
 import com.wind.utils.Page;
 
@@ -50,6 +51,21 @@ public class SalesChanceService {
 	@Transactional(readOnly = false)
 	public int saveSalesChance(SalesChance salesChance) {
 		return salesChanceMapper.saveSalesChance(salesChance);
+	}
+
+	@Transactional(readOnly = true)
+	public List<User> getUsers() {
+		return salesChanceMapper.getUsers();
+	}
+
+	@Transactional(readOnly = true)
+	public SalesChance getChangeById(String id) {
+		return salesChanceMapper.getChangeById(id);
+	}
+
+	@Transactional(readOnly = false)
+	public int saveDispatch(SalesChance chance) {
+		return salesChanceMapper.saveDispatch(chance);
 	}
 
 }

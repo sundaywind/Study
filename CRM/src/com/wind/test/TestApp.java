@@ -1,18 +1,28 @@
 package com.wind.test;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
+import org.apache.catalina.connector.Request;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.wind.bean.Authority;
 import com.wind.bean.Role;
+import com.wind.bean.SalesChance;
 import com.wind.bean.User;
 import com.wind.service.LoginService;
+import com.wind.service.SalesChanceService;
+import com.wind.utils.UserUtils;
 
 public class TestApp {
 
@@ -60,6 +70,43 @@ public class TestApp {
 		for (Authority authority : authorities) {
 			System.out.println(authority.getDisplayName() + "===" + authority.getParentAuthority().getDisplayName() + authority.getUrl());
 		}
+	}
+	
+	@Test
+	public void Test04() {
+		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
+		SalesChanceService bean = ac.getBean(SalesChanceService.class);
+		List<User> users = bean.getUsers();
+		SalesChance chance = bean.getChangeById("625");
+	}
+	
+	@Test
+	public void Test05() {
+		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
+		SalesChanceService bean = ac.getBean(SalesChanceService.class);
+		SalesChance chance = new SalesChance();
+		chance.setId((long) 150);
+		chance.setStatus(2);
+		SimpleDateFormat sDateFormat=new SimpleDateFormat("yyyy-MM-dd"); 
+		Date date = new Date();
+		try {
+			date = sDateFormat.parse("2019-06-13");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		chance.setDesigneeDate(date);
+		User designee = new User();
+		designee.setId(((long) 21));
+		chance.setDesignee(designee);
+		bean.saveDispatch(chance);
+	}
+	
+	@Test
+	public void Test06() {
+		// 获取当前登录人对象
+		// HttpServletRequest request = new HttpServletRequestWrapper(request);
+//		User user = UserUtils.getUser(request);
+//		System.out.println(user);
 	}
 	
 }
