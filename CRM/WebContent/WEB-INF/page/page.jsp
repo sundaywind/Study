@@ -90,6 +90,12 @@
 	$(function(){
 		$("#pageNo").change(function(){
 			var searchStr = $("#page.searchStr").val();
+			if (!searchStr) {
+				searchStr = "";
+			}
+/* 			if (typeof(searchStr) == "undefined") {
+				searchStr = "";
+			} */
 			/* 1.获取pageNo中的值 */
 			var pageNo = $("#pageNo").val();
 			/* 2.正整数正则 */
@@ -100,7 +106,7 @@
 				alert("您输入的有误！");
 				return ;
 			};
-			window.location.href = "${page.path}?pageNo=" + pageNo + searchStr;
+			window.location.href = "${page.path}?pageNo=" + pageNo + searchStr;	// 这样拼接的话会有问题，当serchStr为空的时候拼出来就是2undefined，所以前面要判断。
 		})
 	})
 </script>
