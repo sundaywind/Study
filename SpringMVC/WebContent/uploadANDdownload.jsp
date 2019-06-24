@@ -7,8 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<form action="file/upload" method="post" enctype="multipart/form-data">
-		上传文件：<input type="file" name="file"/>
+	<form action="file/upload" method="post" enctype="multipart/form-data">上传文件：<input type="file" name="file"/>
 		<input type="submit" value="上传"/>
 	</form>
 	<hr>
