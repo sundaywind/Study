@@ -7,3 +7,32 @@
 
 3.MyBatis Jar包下载地址：https://github.com/mybatis/mybatis-3/releases	（包含：MyBatis运行所需jar包、MyBatis官方文档）
 
+4.MyBatis与原生JDBC、JDBCTemplate、Hibernate有什么优势？
+	1）MyBatis是一个框架，除了对数据的增删改查之外，还有缓存、映射字段等设置。
+	2）MyBatis支持动态SQL。（有时候查数据的时候会带一些参数，条件不确定，原技术太麻烦）
+	3）MyBatis中我们可以将Java代码和SQL语句分离。（Java代码需要先编译再运行，SQL也是。我们以前将SQL语句写在Java代码中，修改SQLJava代码也会跟着编译）
+		（1）Java代码是处理逻辑的。
+		（2）SQL语句是处理数据的。
+	4）MyBatis可以将表的关联关系映射为对象的关联关系。（以前的技术完成不了）
+	5）MyBatis是一个半自动化的ORM【Object RelationShip Mapping】（需要自己手写SQL语句）。（Hibernate是一个完全自动化的ORM框架，采用面向对象开发）
+	
+5.工程创建：
+	1）创建动态Web工程，并导入jar包：
+		（1）mybatis-3.4.1.jar（MyBatis所需包）
+		（2）mysql-connector-java-5.1.37-bin.jar（数据库驱动包）
+	2）创建MyBatis的全局配置文件mybatis-config.xml，每个项目中只有唯一的一个MyBatis全局配置文件，在里面配置数据库连接池信息并加载MyBatis的SQL映射文件。
+	3）创建MyBatis的SQL映射文件student.xml
+	4）测试代码：
+		（1）根据MyBatis的全局配置文件创建SqlSessionFactory对象。
+		（2）SqlSessionFactory调用openSession方法创建SqlSession对象。
+		（3）使用SqlSession对象的selectOne(SQL语句的唯一标识（namespace的值 + id值）， 参数)方法，执行SQL语句。
+		（4）关闭Session对象。
+	
+	
+	
+	
+	
+	
+	
+	
+	
