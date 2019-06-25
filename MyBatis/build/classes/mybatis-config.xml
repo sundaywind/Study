@@ -1,21 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- MyBatis的全局配置文件 -->
 <configuration>
+	<!--  
+		<properties>标签：用来加载配置文件信息
+			resource属性：可以加载类路径下的properties文件中的信息。
+			url属性：可以加载本地磁盘上某个位置或者远程url某个properties文件中的信息。
+	-->
+	<properties resource="jdbc.properties" />
+	<!--  
+		<settings>标签：用来进行一些重要的设置（这些是极其重要的调整，它们会修改 MyBatis 在运行时的行为方式。）
+			里面是<setting>标签：具体的设置。
+				设置参数 描述 有效值 默认值
+					cacheEnabled：
+						这个配置使全局的映射器启用或禁用缓存。
+						true | false true
+					lazyLoadingEnabled：
+						全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。
+						true | false true
+					aggressiveLazyLoading：
+						当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每种属性将会按需要加载。
+						true | false true
+					multipleResultSetsEnabled：
+						允许或不允许多种结果集从一个单独的语句中返回（需要适合的驱动）。
+						true | false true
+					useColumnLabel：
+						使用列标签代替列名。不同的驱动在这方便表现不同。参考驱动文档或充分测试两种方法来决定所使用的驱动。
+						true | false true
+					useGeneratedKeys：
+						允许 JDBC 支持生成的键。需要适合的驱动。如果设置为 true 则这个设置强制生成的键被使用，尽管一些驱动拒绝兼容但仍然有效（比如 Derby）。
+						true | false false
+					autoMappingBehavior：
+						指定 MyBatis 如何自动映射列到字段/属性。PARTIAL 只会自动映射简单，没有嵌套的结果。FULL 会自动映射任意复杂的结果（嵌套的或其他情况）。
+						NONE,
+						PARTIAL,
+						FULL
+						PARTIAL
+					defaultExecutorType：
+						配置默认的执行器。SIMPLE 执行器没有什么特别之处。REUSE 执行器重用预处理语句。BATCH 执行器重用语句和批量更新
+						SIMPLE,
+						REUSE,
+						BATCH
+						SIMPLE
+					defaultStatementTimeout：
+						设置超时时间，它决定驱动等待一个数据库响应的时间。
+						Any 
+						positive 
+						integer
+						Not Set
+	-->
+	<!--  
+		<settings>
+		 <setting name="cacheEnabled" value="true"/>
+		 <setting name="lazyLoadingEnabled" value="true"/>
+		 <setting name="multipleResultSetsEnabled" value="true"/>
+		 <setting name="useColumnLabel" value="true"/>
+		 <setting name="useGeneratedKeys" value="false"/>
+		 <setting name="autoMappingBehavior" value="PARTIAL"/>
+		 <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
+		 <setting name="defaultExecutorType" value="SIMPLE"/>
+		 <setting name="defaultStatementTimeout" value="25"/>
+		 <setting name="defaultFetchSize" value="100"/>
+		 <setting name="safeRowBoundsEnabled" value="false"/>
+		 <setting name="mapUnderscoreToCamelCase" value="false"/>
+		 <setting name="localCacheScope" value="SESSION"/>
+		 <setting name="jdbcTypeForNull" value="OTHER"/>
+		 <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+		</settings>
+	-->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+	<!--  
+		<typeAliases>标签：用来给实体类起别名（建议使用全类名，不用别名处理器）
+			<typeAlias>标签：为某个实体类起别名（<typeAlias type="实体类的全类名" alias="表示别名是什么（默认不写）（不区分大小写）"/>）
+			<package name="com.wind.bean"/>标签：给某个包下及子包下的所有类起别名（批量起别名）
+				注意：包下有个User类，包下的子包也有一个User类，可以在实体类上用@Alias("use")注解区分。
+		对于普通的 Java 类型，有许多内建的类型别名。它们都是大小写不敏感的，由于重载的名字，要注意原生类型的特殊处理：
+			别名 			映射的类型
+			_byte 		byte
+			_long 		long
+			_short 		short
+			_int 		int
+			_integer 	int
+			_double 	double
+			_float 		float
+			_boolean 	boolean
+			string 		String
+			byte 		Byte
+			long 		Long
+			short 		Short
+			int 		Integer
+			integer 	Integer
+			double 		Double
+			float 		Float
+			boolean 	Boolean
+			date 		Date
+			decimal 	BigDecimalbigdecimal BigDecimal
+			object 		Object
+			map 		Map
+			hashmap 	HashMap
+			list 		List
+			arraylist 	ArrayList
+			collection 	Collection
+			iterator 	Iterator
+	-->
+	<typeAliases>
+		<typeAlias type="com.wind.bean.User" alias="user"/>
+		<package name="com.wind.bean"/>
+	</typeAliases>
+	<!--  
+		<environments>标签：用来配置环境（开发、测试、上线）
+			里面可以有多个<environment>标签，用来配置不同的环境。
+	-->
 	<!-- 配置数据库连接池信息 -->
-	<environments default="development">
+	<environments default="c3p0">
 		<environment id="development">
+			<!--  
+				<environment>标签：必须同时存在<transactionManager/>和<dataSource>
+					<transactionManager/>标签：是配置事务的。（在MyBatis中有两种事务管理器类型（也就是 type=”[JDBC 能事务回滚|MANAGED 不能事务回滚]”））
+					<dataSource>标签：数据源。type="[UNPOOLED 每次被请求时简单打开和关闭连接|POOLED 适用高并发|JNDI 使用EJB容器]"
+			-->
 			<transactionManager type="JDBC" />
 			<dataSource type="POOLED">
-				<property name="driver" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://106.13.108.29:3306/mysql" />
-				<property name="username" value="root" />
-				<property name="password" value="7758521" />
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+		<environment id="test">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+		<environment id="production">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+		<!-- 
+			自定义数据源：
+				1）导入Jar包：
+					c3p0-0.9.5.2.jar
+					mchange-commons-java-0.2.11.jar
+				2）自定义类：
+					（1）自定义类 继承 UnpooledDataSourceFactory
+					（2）写一个构造器。
+		-->
+		<environment id="c3p0">
+			<transactionManager type="JDBC" />
+			<dataSource type="com.wind.dataSource.C3P0DataSource">
+				<property name="driverClass" value="${jdbc.driver}" />
+				<property name="jdbcUrl" value="${jdbc.url}" />
+				<property name="user" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
 			</dataSource>
 		</environment>
 	</environments>
-	<!-- 加载MyBatis的SQL映射文件 -->
+	<!-- 
+		<mappers>标签：用来加载MyBatis的SQL映射文件或者接口信息
+			<mapper>
+				resource属性（项目中）：<mapper resource="org/mybatis/builder/AuthorMapper.xml"/>
+				url属性（本地磁盘或者网络上）：<mapper url="file:///var/sqlmaps/AuthorMapper.xml"/>
+				class属性：加载接口文件（必须同包同名）
+			<package name="com.wind.dao"/>
+				批量加载接口信息，必须同包同名！（加载接口文件）
+	-->
 	<mappers>
 		<mapper resource="student.xml" />
+		<mapper resource="UserMapper.xml" />
+		<!-- <package name="com.wind.dao"/> -->
 	</mappers>
+	<!--  
+		<databaseIdProvider>标签：用来给数据库厂商起别名（数据库厂商标示）
+			name值是固定写死的；
+			value值可自定义
+	-->
+	<databaseIdProvider type="DB_VENDOR">
+		<property name="MySQL" value="mysql"/>
+		<property name="SQL Server" value="sqlserver"/>
+		<property name="DB2" value="db2"/>
+		<property name="Oracle" value="oracle" />
+		<property name="PostgreSQL" value="pg"/>
+	</databaseIdProvider>
 </configuration>

@@ -28,8 +28,269 @@
 		（3）使用SqlSession对象的selectOne(SQL语句的唯一标识（namespace的值 + id值）， 参数)方法，执行SQL语句。
 		（4）关闭Session对象。
 	
+6.SqlSession：是数据库和服务器的一次会话，不能定义在类中是非数据安全的，每次使用时要重新获取！
+  JavaWeb的Session：是浏览器和服务器的一次会话。	
 	
-	
+7.我们后面会是用接口式编程，数据会更安全：
+	前面是使用SqlSession在方法中定义，传参。但是参数没确定，使用接口的话 参数格式会固定，数据更安全。
+	例：
+		User user = session.selectOne("org.mybatis.example.BlogMapper.selectUser", "websrvc");
+		// 不管传什么参数（String、int、Map、User对象），它都会返回的。
+
+8.<properties>标签：用来加载配置文件信息
+	resource属性：可以加载类路径下的properties文件中的信息。
+	url属性：可以加载本地磁盘上某个位置或者远程url某个properties文件中的信息。
+
+9.<settings>标签：用来进行一些重要的设置（这些是极其重要的调整，它们会修改 MyBatis 在运行时的行为方式。）
+	里面是<setting>标签：具体的设置：
+		设置参数 描述 有效值 默认值
+			cacheEnabled：
+				这个配置使全局的映射器启用或禁用缓存。
+				true | false true
+			lazyLoadingEnabled：
+				全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。
+				true | false true
+			aggressiveLazyLoading：
+				当启用时，有延迟加载属性的对象在被调用时将会完全加载任意属性。否则，每种属性将会按需要加载。
+				true | false true
+			multipleResultSetsEnabled：
+				允许或不允许多种结果集从一个单独的语句中返回（需要适合的驱动）。
+				true | false true
+			useColumnLabel：
+				使用列标签代替列名。不同的驱动在这方便表现不同。参考驱动文档或充分测试两种方法来决定所使用的驱动。
+				true | false true
+			useGeneratedKeys：
+				允许 JDBC 支持生成的键。需要适合的驱动。如果设置为 true 则这个设置强制生成的键被使用，尽管一些驱动拒绝兼容但仍然有效（比如 Derby）。
+				true | false false
+			autoMappingBehavior：
+				指定 MyBatis 如何自动映射列到字段/属性。PARTIAL 只会自动映射简单，没有嵌套的结果。FULL 会自动映射任意复杂的结果（嵌套的或其他情况）。
+				NONE,
+				PARTIAL,
+				FULL
+				PARTIAL
+			defaultExecutorType：
+				配置默认的执行器。SIMPLE 执行器没有什么特别之处。REUSE 执行器重用预处理语句。BATCH 执行器重用语句和批量更新
+				SIMPLE,
+				REUSE,
+				BATCH
+				SIMPLE
+			defaultStatementTimeout：
+				设置超时时间，它决定驱动等待一个数据库响应的时间。
+				Any 
+				positive 
+				integer
+				Not Set
+	<!--  
+		<settings>
+		 <setting name="cacheEnabled" value="true"/>
+		 <setting name="lazyLoadingEnabled" value="true"/>
+		 <setting name="multipleResultSetsEnabled" value="true"/>
+		 <setting name="useColumnLabel" value="true"/>
+		 <setting name="useGeneratedKeys" value="false"/>
+		 <setting name="autoMappingBehavior" value="PARTIAL"/>
+		 <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
+		 <setting name="defaultExecutorType" value="SIMPLE"/>
+		 <setting name="defaultStatementTimeout" value="25"/>
+		 <setting name="defaultFetchSize" value="100"/>
+		 <setting name="safeRowBoundsEnabled" value="false"/>
+		 <setting name="mapUnderscoreToCamelCase" value="false"/>
+		 <setting name="localCacheScope" value="SESSION"/>
+		 <setting name="jdbcTypeForNull" value="OTHER"/>
+		 <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+		</settings>
+	-->
+
+10.<typeAliases>标签：用来给实体类起别名（建议使用全类名，不用别名处理器）
+	<typeAlias>标签：为某个实体类起别名（<typeAlias type="实体类的全类名" alias="表示别名是什么（默认不写）（不区分大小写）"/>）
+	<package name="com.wind.bean"/>标签：给某个包下及子包下的所有类起别名（批量起别名）
+		注意：包下有个User类，包下的子包也有一个User类，可以在实体类上用@Alias("use")注解区分。
+	对于普通的 Java 类型，有许多内建的类型别名。它们都是大小写不敏感的，由于重载的名字，要注意原生类型的特殊处理：
+		别名 			映射的类型
+		_byte 		byte
+		_long 		long
+		_short 		short
+		_int 		int
+		_integer 	int
+		_double 	double
+		_float 		float
+		_boolean 	boolean
+		string 		String
+		byte 		Byte
+		long 		Long
+		short 		Short
+		int 		Integer
+		integer 	Integer
+		double 		Double
+		float 		Float
+		boolean 	Boolean
+		date 		Date
+		decimal 	BigDecimalbigdecimal BigDecimal
+		object 		Object
+		map 		Map
+		hashmap 	HashMap
+		list 		List
+		arraylist 	ArrayList
+		collection 	Collection
+		iterator 	Iterator
+
+11.<environments>标签：用来配置环境（开发、测试、上线），里面可以有多个<environment>标签，用来配置不同的环境：
+	<environment>标签：必须同时存在<transactionManager/>和<dataSource>
+		<transactionManager/>标签：是配置事务的。（在MyBatis中有两种事务管理器类型（也就是 type=”[JDBC 能事务回滚|MANAGED 不能事务回滚]”））
+		<dataSource>标签：数据源。type="[UNPOOLED 每次被请求时简单打开和关闭连接|POOLED 适用高并发|JNDI 使用EJB容器]"
+
+12.自定义数据源：
+	1）导入Jar包：
+		c3p0-0.9.5.2.jar
+		mchange-commons-java-0.2.11.jar
+	2）自定义类：
+		（1）自定义类 继承 UnpooledDataSourceFactory
+		（2）写一个构造器。
+
+13.<mappers>标签：用来加载MyBatis的SQL映射文件或者接口信息
+	<mapper>
+		resource属性（项目中）：<mapper resource="org/mybatis/builder/AuthorMapper.xml"/>
+		url属性（本地磁盘或者网络上）：<mapper url="file:///var/sqlmaps/AuthorMapper.xml"/>
+		class属性：加载接口文件（必须同包同名）
+	<package name="com.wind.dao"/>
+		批量加载接口信息，必须同包同名！（加载接口文件）
+
+14.MyBatis基于注解的支持：没有XML映射文件，SQL直接写在注解后面。
+	@Select("select * from `user` where `User` = #{id}")
+	@Insert("")
+	@Update("")
+	@Delete("")
+
+15.<databaseIdProvider>标签：用来给数据库厂商起别名（数据库厂商标示）
+	name值是固定写死的；
+	value值可自定义。
+	<!--
+		<databaseIdProvider type="DB_VENDOR">
+			<property name="MySQL" value="mysql"/>
+			<property name="SQL Server" value="sqlserver"/>
+			<property name="DB2" value="db2"/>
+			<property name="Oracle" value="oracle" />
+			<property name="PostgreSQL" value="pg"/>
+		</databaseIdProvider>
+	-->
+16.MyBatis的insert、update、 delete：
+	<insert id="insertAuthor" parameterType="domain.blog.Author" flushCache="true" statementType="PREPARED" keyProperty="" useGeneratedKeys="" timeout="20000">
+	<update id="insertAuthor" parameterType="domain.blog.Author" flushCache="true" statementType="PREPARED" timeout="20000">
+	<delete id="insertAuthor" parameterType="domain.blog.Author" flushCache="true" statementType="PREPARED" timeout="20000">
+		id：跟接口的方法名保持一致；
+		parameterType：接口方法的参数类型；
+		flushCache：将其设置为 true，不论语句什么时候被带用，都会导致缓存被清空。默认值：false；
+		statementType：STATEMENT,PREPARED 或 CALLABLE 的一种。这会让 MyBatis使用选择使用 Statement，PreparedStatement 或 CallableStatement。默认值：PREPARED；
+		timeout：这个设置驱动程序等待数据库返回请求结果，并抛出异常时间的最大等待值。默认不设置（驱动自行处理）；
+		keyProperty：（仅对insert有用）标记一个属性，MyBatis 会通过getGeneratedKeys或者通过 insert 语句的 selectKey 子元素设置它的值。默认：不设置；
+		useGeneratedKeys：（仅对 insert 有 用 ） 这 会 告 诉 MyBatis 使 用 JDBC 的getGeneratedKeys 方法来取出由数据（比如：像 MySQL 和 SQL Server 这样的数据库管理系统的自动递增字段）内部生成的主键。默认值：false。
+	下面就是 insert，update 和 delete 语句的示例：
+		<insert id="insertAuthor" parameterType="domain.blog.Author">
+			insert into Author (id,username,password,email,bio) values (#{id},#{username},#{password},#{email},#{bio})
+		</insert>
+		<update id="updateAuthor" parameterType="domain.blog.Author">
+			update Author set
+				username = #{username},
+				password = #{password},
+				email = #{email},
+				bio = #{bio}
+			where id = #{id}
+		</update>
+		<delete id="deleteAuthor” parameterType="int">
+			delete from Author where id = #{id}
+		</delete> 
+
+17.插入的时候获取主键：
+	对于随机生成的id，只能先插入再查，两条SQL。
+	对于自增长的id：
+		1）在对应的插入标签中设置useGeneratedKeys="true"（表示使用MySQL的主键自增功能）
+		2）指定获取到的主键保存到JavaBean对象的哪个属性中：keyProperty="id"
+
+18.<sql id="userColumns"></sql>标签：作用是用来SQL重用。
+	在要引用的地方：<include refid=”userColumns”/>
+
+19.接口方法中的参数类型：
+	一、单个参数：
+		从SQL映射语句中取值的时候，可以使用任意字符：
+			public List<XXBean> getXXBeanList(String xxCode);  
+			<select id="getXXXBeanList" parameterType="java.lang.String" resultType="XXBean">
+			　　select t.* from tableName t where t.id= #{id}  
+			</select>  
+	二、多参数：
+		从SQL映射语句中取值的时候，有三种方式：
+			（1）使用#｛index｝是第几个就用第几个的索引，索引从0开始。【#{0}、#{1}】
+			（2）使用#｛param｝是第几个就用第几个的索引，索引从1开始。【#{param1}、#{param2}】
+			（3）使用@parm注解（public User getUserByName(@Param(value = "id") String name);），在SQL映射文件中用#｛value｝取值。
+				public List<XXXBean> getXXXBeanList(String xxId, String xxCode);  
+				<select id="getXXXBeanList" resultType="XXBean">
+				　　select t.* from tableName where id = #{0} and name = #{1}  
+				</select> 
+	三、使用POJO对象：
+		从SQL映射语句中使用#{ }取值的时候，要求和POJO对象的属性名保持一致：
+			public User getUserByName(User user);
+			<select id="getUserByName" resultType="com.wind.bean.User">
+				select * from `user` where `User` = #{name}
+			</select>
+	四、Map封装多参数：  
+		其中HashMap是MyBatis自己配置好的直接使用就行，SQL映射语句中使用#{Key}取值。（#{ }里面的内容要和map的键保持一致） 
+			public List<XXXBean> getXXXBeanList(HashMap map);  
+			<select id="getXXXBeanList" parameterType="hashmap" resultType="XXBean">
+			　　select 字段... from XXX where id=#{xxId} code = #{xxCode}  
+			</select>  
+	 五、List封装in：
+		public List<XXXBean> getXXXBeanList(List<String> list);  
+		<select id="getXXXBeanList" resultType="XXBean">
+		　　select 字段... from XXX where id in
+		　　<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		　　　　#{item}  
+		　　</foreach>  
+		</select>  
+		foreach 最后的效果是select 字段... from XXX where id in ('1','2','3','4') 
+	六、多参数传递之注解方式示：    
+		例子：
+			public AddrInfo getAddrInfo(@Param("corpId")int corpId, @Param("addrId")int addrId);
+			xml配置这样写：
+			<select id="getAddrInfo"  resultMap="com.xxx.xxx.AddrInfo">
+			       SELECT * FROM addr__info 
+			　　　　where addr_id=#{addrId} and corp_id=#{corpId}
+			</select>
+		以前在<select>语句中要带parameterType的，现在可以不要这样写。
+	七、selectList()只能传递一个参数，但实际所需参数既要包含String类型，又要包含List类型时的处理方法：
+		将参数放入Map，再取出Map中的List遍历。如下：
+			List<String> list_3 = new ArrayList<String>();
+			Map<String, Object> map2 = new HashMap<String, Object>();
+			list.add("1");
+			list.add("2");
+			map2.put("list", list); //网址id
+			map2.put("siteTag", "0");//网址类型
+			public List<SysWeb> getSysInfo(Map<String, Object> map2) {
+			　　return getSqlSession().selectList("sysweb.getSysInfo", map2);
+			}
+			<select id="getSysInfo" parameterType="java.util.Map" resultType="SysWeb">
+			　　select t.sysSiteId, t.siteName, t1.mzNum as siteTagNum, t1.mzName as siteTag, t.url, t.iconPath
+			   from TD_WEB_SYSSITE t
+			   left join TD_MZ_MZDY t1 on t1.mzNum = t.siteTag and t1.mzType = 10
+			   WHERE t.siteTag = #{siteTag } 
+			   and t.sysSiteId not in 
+			   <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			       #{item}
+			   </foreach>
+			 </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	
 	

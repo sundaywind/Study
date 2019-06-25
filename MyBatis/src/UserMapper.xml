@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 怎么让这个SQL映射文件跟对应的接口对应上：namespace="接口的全类名" -->
+<mapper namespace="com.wind.dao.UserMapper">
+	<!-- 
+		id：和接口的方法名保持一致；
+		resultType：字段和实体类对应的，返回值类型如果是对象的话，使用对象的全类名
+	-->
+	<select id="getUserByName" resultType="com.wind.bean.User">
+		select * from `user` where `User` = #{id}
+	</select>
+	
+	<!--  
+		id：跟接口的方法名保持一致；
+		parameterType：接口方法的参数类型；
+		flushCache：将其设置为 true，不论语句什么时候被带用，都会导致缓存被清空。默认值：false；
+		statementType：STATEMENT,PREPARED 或 CALLABLE 的一种。这会让 MyBatis使用选择使用 Statement，PreparedStatement 或 CallableStatement。默认值：PREPARED；
+		timeout：这个设置驱动程序等待数据库返回请求结果，并抛出异常时间的最大等待值。默认不设置（驱动自行处理）；
+		keyProperty：（仅对insert有用）标记一个属性，MyBatis 会通过getGeneratedKeys或者通过 insert 语句的 selectKey 子元素设置它的值。默认：不设置；
+		useGeneratedKeys：（仅对 insert 有 用 ） 这 会 告 诉 MyBatis 使 用 JDBC 的getGeneratedKeys 方法来取出由数据（比如：像 MySQL 和 SQL Server 这样的数据库管理系统的自动递增字段）内部生成的主键。默认值：false。
+	-->
+	<!-- 
+		<insert id="insertAuthor" parameterType="domain.blog.Author" flushCache="true" statementType="PREPARED" keyProperty="" useGeneratedKeys="" timeout="20000">
+		<update id="insertAuthor" parameterType="domain.blog.Author" flushCache="true" statementType="PREPARED" timeout="20000">
+		<delete id="insertAuthor" parameterType="domain.blog.Author" flushCache="true" statementType="PREPARED" timeout="20000"> 
+	-->
+	<!-- 
+		下面就是 insert，update 和 delete 语句的示例：
+			<insert id="insertAuthor" parameterType="domain.blog.Author">
+			insert into Author (id,username,password,email,bio)
+			values (#{id},#{username},#{password},#{email},#{bio})
+			</insert>
+			<update id="updateAuthor" parameterType="domain.blog.Author">
+			update Author set
+			username = #{username},
+			password = #{password},
+			email = #{email},
+			bio = #{bio}
+			where id = #{id}
+			</update>
+			<delete id="deleteAuthor” parameterType="int">
+			delete from Author where id = #{id}
+			</delete> 
+	-->
+	<!--  
+		<sql>标签：作用是用来SQL重用。
+			在要引用的地方：<include refid=”userColumns”/>
+	-->
+	<sql id="userColumns"></sql>
+</mapper>
