@@ -9,7 +9,9 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.Test;
 
+import com.wind.bean.OrderItems;
 import com.wind.bean.User;
+import com.wind.dao.OrderItemsMapper;
 import com.wind.dao.UserMapper;
 
 public class TestAll {
@@ -87,6 +89,22 @@ public class TestAll {
 		User user = mapper.getUserByName("websrvc");
 		System.out.println(user);
 		openSession.commit();
+		openSession.close();
+	}
+	
+	@Test
+	/* 
+		关联关系：
+			
+	*/
+	public void test05() throws IOException {
+		String resource = "mybatis-config.xml";
+		InputStream inputStream = Resources.getResourceAsStream(resource);
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+		SqlSession openSession = sqlSessionFactory.openSession();
+		OrderItemsMapper orderItemsMapper = openSession.getMapper(OrderItemsMapper.class);
+		OrderItems orderItem = orderItemsMapper.getOrderItemsById(3);
+		System.out.println(orderItem);
 		openSession.close();
 	}
 }

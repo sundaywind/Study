@@ -138,7 +138,7 @@
 		<transactionManager/>标签：是配置事务的。（在MyBatis中有两种事务管理器类型（也就是 type=”[JDBC 能事务回滚|MANAGED 不能事务回滚]”））
 		<dataSource>标签：数据源。type="[UNPOOLED 每次被请求时简单打开和关闭连接|POOLED 适用高并发|JNDI 使用EJB容器]"
 
-12.自定义数据源：
+12.自定义数据源：（仿照MyBatis底层写：MyBatis数据源在源码包的Configuration类中（Shift+Ctrl+T找））
 	1）导入Jar包：
 		c3p0-0.9.5.2.jar
 		mchange-commons-java-0.2.11.jar
@@ -235,8 +235,45 @@
 			public List<XXXBean> getXXXBeanList(HashMap map);  
 			<select id="getXXXBeanList" parameterType="hashmap" resultType="XXBean">
 			　　select 字段... from XXX where id=#{xxId} code = #{xxCode}  
-			</select>  
-	 五、List封装in：
+			</select>
+	五、Collection、List封装参数：
+		Collection封装的参数，在SQL语句中用#{collection[]}下标取，也可以用#{list[]}下标取（Collection和List的参数，在取值的时候可以相互取）；从0开始。
+			封装参数：
+				Collection<Object> collection = new ArrayList<Object>();
+				// List<Object> list = new ArrayList<Object>();
+				collection.add(12);
+				collection.add("张三");
+				collection.add(85.6);
+				// list.add(12);
+				// list.add("张三");
+				// list.add(85.6);
+			接口：
+				public void insertEmployee(Collection<Object> collection);
+				// public void insertEmployee(List<Object> list);
+			SQL映射文件：
+				<insert id="insertEmployee">
+					insert into employee values(#{collection[1]}, #{collection[2]}, #{collection[0]});
+				</insert>
+			用Collection的数据类型，也可以用List取！（这是怎么做到的）
+				<insert id="insertEmployee">
+					insert into employee values(#{list[1]}, #{list[2]}, #{list[0]});
+				</insert>
+	六、混合类型多参数：    
+		多参数肯定要加@param注解，SQL语句中 用@param注解的value值（.）点的方式取值。示例 既有Map又有POJO写法：
+			例子：
+				封装参数：
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("name", "张三丰");
+					Employee employee = new Employee();
+					employee.setSocre(56.8);
+				接口：
+					public void getEmployee(@Param("map")Map<String, Object> map, @Param("emp")Employee employee);
+				xml配置这样写：
+					<select id="getAddrInfo"  resultMap="com.xxx.xxx.AddrInfo">
+					       SELECT * FROM addr__info 
+					　　　　where addr_id=#{map.name} and corp_id=#{emp.socre};
+					</select>
+	 七、List封装in：
 		public List<XXXBean> getXXXBeanList(List<String> list);  
 		<select id="getXXXBeanList" resultType="XXBean">
 		　　select 字段... from XXX where id in
@@ -245,16 +282,8 @@
 		　　</foreach>  
 		</select>  
 		foreach 最后的效果是select 字段... from XXX where id in ('1','2','3','4') 
-	六、多参数传递之注解方式示：    
-		例子：
-			public AddrInfo getAddrInfo(@Param("corpId")int corpId, @Param("addrId")int addrId);
-			xml配置这样写：
-			<select id="getAddrInfo"  resultMap="com.xxx.xxx.AddrInfo">
-			       SELECT * FROM addr__info 
-			　　　　where addr_id=#{addrId} and corp_id=#{corpId}
-			</select>
-		以前在<select>语句中要带parameterType的，现在可以不要这样写。
-	七、selectList()只能传递一个参数，但实际所需参数既要包含String类型，又要包含List类型时的处理方法：
+	
+	八、selectList()只能传递一个参数，但实际所需参数既要包含String类型，又要包含List类型时的处理方法：
 		将参数放入Map，再取出Map中的List遍历。如下：
 			List<String> list_3 = new ArrayList<String>();
 			Map<String, Object> map2 = new HashMap<String, Object>();
@@ -276,23 +305,125 @@
 			   </foreach>
 			 </select>
 
+20.接口中方法的返回值：
+	1）对于基本数据类型[增、删、改]（查 必须写返回值类型），不需要写resultType。（接口方法中是有返回值的，SQL文件中不需要写返回值）
+		示例：
+			接口：
+				EmpById(Integer id);
+			xml文件：
+				<delete id="delEmpById">
+					delete from employee where id = #{id}
+				</delete>
+	2）对于返回值是POJO或者POJO的集合（List<User>），resultType写POJO对象的全类名、POJO对象集合的集合内POJO对象的全类名：
+		示例：
+			（1）POJO对象：
+				接口：
+					public User getUserById(String id);
+				xml文件：
+					<select id="getUserById" resultType="com.wind.bean.User">
+				　		select * from user where id = #{id}
+				 	</select>
+			（2）POJO对象的集合：
+				接口：
+					public List<User> getUser();
+				xml文件：
+					<select id="getUser" resultType="com.wind.bean.User">
+				　		select * from user
+				 	</select>
+	3）返回值是Map：
+		（1）单个数据：（返回的数据的Key是数据表中的列名）
+			接口：
+				public Map<String, Object> getMapById();
+			xml文件：
+				<select id="getMapById" resultType="map">
+			　		select * from user where id = #{id}
+			 	</select>
+		（2）数据集合：
+			A、值用POJO对象接收：（Map的Key需要在接口中指定）
+				接口：
+					@MapKey("id")
+					public Map<String, User> getMaps();
+				xml文件：
+					<select id="getMaps" resultType="map">
+				　		select * from user
+				 	</select>
+			B、没有POJO对象，返回数据的集合：（用List封装Map，会得到Map的集合）
+				接口：
+					public List<Map<String, Object>> getMaps();
+				xml文件：
+					<select id="getMaps" resultType="map">
+				　		select * from user
+				 	</select>
 
+21.在任何时候SQL映射文件都不用写传入参数的parameterType。
 
+22.log4j的使用：（打印日志）
+	1）导入log4j配置文件：log4j.xml（有.xml格式的也有.properties）（放在src目录下）
+	2）导入log4j的 jar包：log4j-1.2.17.jar
+		
+23.#{}和${}：（MyBatis的SQL语句中取值）
+	#{}：是采用占位符的方式，有数据安全检查机制，不存在数据安全问题。
+	${}：是直接将数据填充到SQL语句中，有数据安全问题和SQL注入问题。
+	*如果获取的参数是作为表名或者排序字段必须用${}取值。
 
-
-
-
-
-
-
-
-
-
-
-
-
+24.如果表中的列名和实体类的属性名不一致的情况下，有三种解决办法：
+	1）起别名；
+	2）在MyBatis的全局配置文件中 配置下划线（_）转驼峰式命名：<setting name="mapUnderscoreToCamelCase" value="true"/>
+	3）使用<ResultMap>标签；
 	
+25.<ResultMap>标签基本使用：（用来处理结果集【表的关联关系直接映射为对象的关联关系时一定要用ResultMap】）
+	注意：resultType=""（结果类型）和 resultMap=""（结果映射） 只能存在一个。
+	<!--  
+		resultMap的id一般命名为：方法名+ResultMap。
+		type：你想把结果映射到哪个JavaBean对象中。
+	-->
+	<resultMap type="" id="方法名+ResultMap">
+		<!-- id列专门用来映射主键的（为什么不用result映射主键：可以是可以，但是MyBatis对id映射注解是有优化的） -->
+		<id column="" property=""/>
+		<!-- result用来映射普通字段 。如果表中的列名和JavaBean对象的属性名一致的情况下，可以省略不写 结果也是可以映射过去的。（建议写上：维护的话比较麻烦）-->
+		<result column="" property=""/>
+	</resultMap>
+	<select id="" resultMap="方法名+ResultMap">
+		
+	</select>
 	
+26.<ResultMap>高级映射使用：
+	1）关联关系分类：
+		（1）对一的关联关系（一对一、多对一）：在数据表中，在多的一端保存一的一端的外键，让外键指向一的一端的主键。
+			对一关系的三种解决方案：
+				①使用<ResultMap>标签：
+					
+				②使用<ResultMap>标签的
+				③
+		（2）对多的关联关系（一对多、多对多）：
+			
+	2）准备有关联关系的数据表和实体类：
+		（1）数据表：（订单和订单项：一个订单有多个订单项，而一个订单项只能有一个订单）
+			#订单表
+			CREATE TABLE orders(
+				id INT PRIMARY KEY AUTO_INCREMENT,
+				order_name VARCHAR(20) DEFAULT NULL
+			)
+			#订单项
+			CREATE TABLE order_items(
+				id INT PRIMARY KEY AUTO_INCREMENT,
+				order_item_name VARCHAR(20) DEFAULT NULL,
+				order_id INT,
+				#FOREIGN KEY(order_id)【表中的哪个列作为外键】、REFERENCES orders(id)【是哪张表的哪个列】
+				FOREIGN KEY(order_id) REFERENCES orders(id)
+			)
+		（2）实体类
+			public class Orders {
+				private Integer id;
+				private String orderName;
+			}
+			public class OrderItems {
+				private Integer id;
+				private String orderItemName;
+				private Orders orders;
+			}
+	3）要求1：查询订单项信息的时候，将订单项所属的订单信息查出来。（查的是订单项所以要创建订单项的接口及映射文件）
+		
 	
 	
 	

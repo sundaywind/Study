@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 怎么让这个SQL映射文件跟对应的接口对应上：namespace="接口的全类名" -->
+<mapper namespace="com.wind.dao.OrderItemsMapper">
+	<!-- public OrderItems getOrderItemsById(Integer id); -->
+	<!-- 1）使用<ResultMap>标签 -->
+	<resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+		<id column="id" property="id"/>
+		<result column="order_item_name" property="orderItemName"/>
+		<result column="oid" property="orders.id"/>
+		<result column="order_name" property="orders.orderName"/>
+	</resultMap>
+	<select id="getOrderItemsById" resultMap="getOrderItemsByIdResultMap">
+		SELECT 	
+			a.id,
+			a.order_item_name,
+			b.id oid,
+			b.order_name
+		FROM order_items a
+			LEFT JOIN orders b ON b.id = a.order_id
+		WHERE a.id = #{id}
+	</select>
+	
+	<!-- <select id="getOrderItemsById" resultType="com.wind.bean.OrderItems">
+		SELECT 	
+			a.id "id",
+			a.order_item_name "orderItemName",
+			b.id "orders.id",
+			b.order_name "orders.orderName"
+		FROM order_items a
+			LEFT JOIN orders b ON b.id = a.order_id
+		WHERE a.id = #{id}
+	</select> -->
+</mapper>
