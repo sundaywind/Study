@@ -2,6 +2,7 @@ package com.wind.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -10,8 +11,10 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.Test;
 
 import com.wind.bean.OrderItems;
+import com.wind.bean.Orders;
 import com.wind.bean.User;
 import com.wind.dao.OrderItemsMapper;
+import com.wind.dao.OrdersMapper;
 import com.wind.dao.UserMapper;
 
 public class TestAll {
@@ -93,18 +96,41 @@ public class TestAll {
 	}
 	
 	@Test
-	/* 
-		关联关系：
-			
-	*/
+	// 对一的关联关系
 	public void test05() throws IOException {
 		String resource = "mybatis-config.xml";
 		InputStream inputStream = Resources.getResourceAsStream(resource);
 		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 		SqlSession openSession = sqlSessionFactory.openSession();
 		OrderItemsMapper orderItemsMapper = openSession.getMapper(OrderItemsMapper.class);
-		OrderItems orderItem = orderItemsMapper.getOrderItemsById(3);
+		OrderItems orderItem = orderItemsMapper.getOrderItemsById(9);
 		System.out.println(orderItem);
+		openSession.close();
+	}
+	
+	@Test
+	// 对多的关联关系
+	public void test06() throws IOException {
+		String resource = "mybatis-config.xml";
+		InputStream inputStream = Resources.getResourceAsStream(resource);
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+		SqlSession openSession = sqlSessionFactory.openSession();
+		OrdersMapper ordersMapper = openSession.getMapper(OrdersMapper.class);
+		List<Orders> ordersWithOrderItems = ordersMapper.getOrdersWithOrderItemsByOrderid(3);
+		System.out.println(ordersWithOrderItems);
+		openSession.close();
+	}
+	
+	@Test
+	// 对多的关联关系，分步查询
+	public void test07() throws IOException {
+		String resource = "mybatis-config.xml";
+		InputStream inputStream = Resources.getResourceAsStream(resource);
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+		SqlSession openSession = sqlSessionFactory.openSession();
+		OrdersMapper ordersMapper = openSession.getMapper(OrdersMapper.class);
+		List<Orders> ordersWithOrderItems = ordersMapper.getOrdersWithOrderItemsByOrderid(3);
+		System.out.println(ordersWithOrderItems);
 		openSession.close();
 	}
 }

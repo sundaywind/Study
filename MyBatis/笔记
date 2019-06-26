@@ -390,13 +390,160 @@
 26.<ResultMap>高级映射使用：
 	1）关联关系分类：
 		（1）对一的关联关系（一对一、多对一）：在数据表中，在多的一端保存一的一端的外键，让外键指向一的一端的主键。
-			对一关系的三种解决方案：
-				①使用<ResultMap>标签：
-					
-				②使用<ResultMap>标签的
-				③
-		（2）对多的关联关系（一对多、多对多）：
-			
+			对一关系的四种解决方案：
+				▶正常开发，采用连缀：
+					<select id="getOrderItemsById" resultType="com.wind.bean.OrderItems">
+						SELECT 	
+							a.id "id",
+							a.order_item_name "orderItemName",
+							b.id "orders.id",
+							b.order_name "orders.orderName"
+						FROM order_items a
+							LEFT JOIN orders b ON b.id = a.order_id
+						WHERE a.id = #{id}
+					</select>
+				▶使用<ResultMap>标签：
+					<resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+						<id column="id" property="id"/>
+						<result column="order_item_name" property="orderItemName"/>
+						<result column="oid" property="orders.id"/>
+						<result column="order_name" property="orders.orderName"/>
+					</resultMap>
+					<select id="getOrderItemsById" resultMap="getOrderItemsByIdResultMap">
+						SELECT 	
+							a.id,
+							a.order_item_name,
+							b.id oid,
+							b.order_name
+						FROM order_items a
+							LEFT JOIN orders b ON b.id = a.order_id
+						WHERE a.id = #{id}
+					</select>
+				▶使用<ResultMap>标签的<association>标签，处理对一的关联关系：
+					<resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+						<id column="id" property="id"/>
+						<result column="order_item_name" property="orderItemName"/>
+						<!-- association：处理对一的关联关系 -->
+						<association property="orders" javaType="com.wind.bean.Orders">
+							<id column="oid" property="id"/>
+							<result column="order_name" property="orderName"/>
+						</association>
+					</resultMap>
+					<select id="getOrderItemsById" resultMap="getOrderItemsByIdResultMap">
+						SELECT 	
+							a.id,
+							a.order_item_name,
+							b.id oid,
+							b.order_name
+						FROM order_items a
+							LEFT JOIN orders b ON b.id = a.order_id
+						WHERE a.id = #{id}
+					</select>
+				▶使用分步查询：（这个最屌）
+					◆同一xml中的分步查询：
+						<resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+							<id column="id" property="id"/>
+							<result column="order_item_name" property="orderItemName"/>
+							<!--  
+								见到association还是处理对一的关联关系；
+								property：<resultMap type="" 的值哪个属性是对一的。
+								select：查询的SQL结果集赋值给 property="orders" 的属性。
+								column：将查询出来哪个列的值，作为id为ordersSelect的<select>标签查询语句的参数。
+							-->
+							<association property="orders" select="ordersSelect" column="order_id"></association>
+						</resultMap>
+						<select id="getOrderItemsById" resultMap="getOrderItemsByIdResultMap">
+							SELECT
+								a.id,
+								a.order_item_name,
+								a.order_id
+							FROM order_items a
+							WHERE a.id = #{id}
+						</select>
+						<select id="ordersSelect" resultType="com.wind.bean.Orders">
+							SELECT 
+								id,
+								order_name
+							FROM orders
+							WHERE id = #{dd}
+						</select>
+					◆不在同一xml中的分步查询：
+						<mapper namespace="com.wind.dao.OrderItemsMapper">
+							<resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+								<id column="id" property="id"/>
+								<result column="order_item_name" property="orderItemName"/>
+								<association property="orders" select="com.wind.dao.OrdersMapper.getOrderById" column="order_id"></association>
+							</resultMap>
+							<select id="getOrderItemsById" resultMap="getOrderItemsByIdResultMap">
+								SELECT
+									a.id,
+									a.order_item_name,
+									a.order_id
+								FROM order_items a
+								WHERE a.id = #{id}
+							</select>
+						</mapper>
+						================================================================
+						<mapper namespace="com.wind.dao.OrdersMapper">
+							<select id="getOrderById" resultType="com.wind.bean.Orders">
+								SELECT 
+									id,
+									order_name
+								FROM orders
+								WHERE id = #{dd}
+							</select>
+						</mapper>
+		（2）对多的关联关系（一对多【实体类中，从一的一端保存多的一端的集合】、多对多[学生和教师：一个学生有多个老师，一个老师教多个学生]【多对多需要第三张表，学生表、教师表、联合表(保存学生表和教师表的联合主键)】）：
+			对多关系的两种解决方案：（因为是集合，不能采用连缀的方式）
+				▶使用<collection>标签：
+					<resultMap type="com.wind.bean.Orders" id="getOrdersWithOrderItemsByOrderidResultMap">
+						<id column="id" property="id"/>
+						<result column="order_name" property="orderName"/>
+						<!--  
+							对多的解决方案，我们使用<collection>标签：
+								property：<resultMap的type指定对象的哪个属性是集合。
+								ofType：指定集合中元素的数据类型。
+						-->
+						<collection property="list" ofType="com.wind.bean.OrderItems">
+							<id column="bid" property="id"/>
+							<result column="order_item_name" property="orderItemName"/>
+						</collection>
+					</resultMap>
+					<select id="getOrdersWithOrderItemsByOrderid" resultMap="getOrdersWithOrderItemsByOrderidResultMap">
+						SELECT 
+							a.`id`,
+							a.`order_name`,
+							b.`id` bid,
+							b.`order_item_name`
+						FROM `orders` a
+							LEFT JOIN `order_items` b ON b.`order_id` = a.`id`
+						WHERE a.id = #{id}
+					</select>
+				▶使用分步查询（同xml文件下，不同的只是修改namespace+查询的id名）：
+					<!-- 对多的分步查询 -->
+					<resultMap type="com.wind.bean.Orders" id="getOrdersWithOrderItemsDuiDuoResultMap">
+						<id column="id" property="id"/>
+						<result column="order_name" property="orderName"/>
+						<!-- 
+							select：指定<select>的id跟它相等的查询结果集，赋值给property的属性。
+						-->
+						<collection property="list" select="collectionSelect" column="id"></collection>
+					</resultMap>
+					<select id="getOrdersWithOrderItemsDuiDuo" resultMap="getOrdersWithOrderItemsDuiDuoResultMap">
+						SELECT 
+							`id`, 
+							`order_name`
+						FROM `orders`
+						WHERE id = #{id}
+					</select>
+					<select id="collectionSelect" resultType="com.wind.bean.OrderItems">
+						SELECT 
+							id, 
+							order_item_name "orderItemName", 
+							order_id "orders.id"
+						FROM `order_items`
+						WHERE `order_id` = #{dd}
+					</select>
 	2）准备有关联关系的数据表和实体类：
 		（1）数据表：（订单和订单项：一个订单有多个订单项，而一个订单项只能有一个订单）
 			#订单表
@@ -413,18 +560,183 @@
 				FOREIGN KEY(order_id) REFERENCES orders(id)
 			)
 		（2）实体类
+			// 订单表
 			public class Orders {
 				private Integer id;
 				private String orderName;
 			}
+			// 订单项
 			public class OrderItems {
 				private Integer id;
 				private String orderItemName;
 				private Orders orders;
 			}
-	3）要求1：查询订单项信息的时候，将订单项所属的订单信息查出来。（查的是订单项所以要创建订单项的接口及映射文件）
+	3）需求：
+		要求1（一对一）：查询妻子的时候，将妻子对应的丈夫信息查询出来。
+		要求2（多对一）：查询订单项信息的时候，将订单项所属的订单信息查出来。（查的是订单项所以要创建订单项的接口及映射文件）
+		要求3（一对多）：查询订单信息的时候，将该订单下的所有订单项信息查出来。
+		要求4（多对多）：查询学生信息的时候，将该学生的教师信息也查出来。
+	4）总结：
+		一对一：示例：丈夫|妻子
+			表的创建：
+				#妻子表
+				CREATE TABLE wife(
+					id INT PRIMARY KEY AUTO_INCREMENT,
+					wife_name VARCHAR(20)
+				)
+				#丈夫表（主键不能自增，主键既是自己的主键也是自己的外键，不受自己控制 需要从妻子表获取）
+				第一种创建方式：
+					CREATE TABLE husband(															
+						id INT PRIMARY KEY,
+						husband_name VARCHAR(20),
+						FOREIGN KEY(id) REFERENCES wife(id)
+					)
+				第二种创建方式：（UNIQUE 唯一约束）
+					CREATE TABLE husband(
+						id INT PRIMARY KEY,
+						husband_name VARCHAR(20),
+						w_id INT UNIQUE,
+						FOREIGN KEY(w_id) REFERENCES wife(id)
+					)
+		一对多|多对一：数据库是一样的，在多的一端保存一的一端的主键，实体类有区别。示例：订单|订单项
+			#订单表：
+				CREATE TABLE orders(
+					id INT PRIMARY KEY AUTO_INCREMENT,
+					order_name VARCHAR(20) DEFAULT NULL
+				)
+			#订单项：
+				CREATE TABLE order_items(
+					id INT PRIMARY KEY AUTO_INCREMENT,
+					order_item_name VARCHAR(20) DEFAULT NULL,
+					order_id INT,
+					#FOREIGN KEY(order_id)【表中的哪个列作为外键】、REFERENCES orders(id)【是哪张表的哪个列】
+					FOREIGN KEY(order_id) REFERENCES orders(id)
+				)
+		多对多：示例：老师|学生|第三张表（t_id, s_id：组合主键，不能重复）
+			#教师表：
+				CREATE TABLE teacher(
+					id INT PRIMARY KEY AUTO_INCREMENT,
+					t_name VARCHAR(20)
+				)
+			#学生表：
+				CREATE TABLE student(
+					id INT PRIMARY KEY AUTO_INCREMENT,
+					s_name VARCHAR(20) 
+				)
+			#第三张表：
+				CREATE TABLE teacher_student(
+					t_id INT,	
+					s_id INT,
+					PRIMARY KEY(t_id, s_id),
+					FOREIGN KEY(t_id) REFERENCES teacher(id),
+					FOREIGN KEY(s_id) REFERENCES student(id)
+				)
 		
-	
-	
-	
+27.硬实力：
+	在xml中引入另一个xml查询的结果并赋值：
+		<association property="orders" select="com.wind.dao.OrdersMapper.getOrderById" column="order_id"></association>
+		<collection property="list" select="collectionSelect" column="id"></collection>
+		
+28.MyBatis的动态SQL：
+	●if：基本做条件查找。
+		<select id=”findActiveBlogLike” parameterType=”Blog” resultType=”Blog”>
+			SELECT * FROM BLOG WHERE state = "ACTIVE"
+				<!-- test中判断的是对象的属性，不用#{}取 -->
+				<if test=”title != null”>
+					<!-- 取属性的值用#{} -->
+					AND title like #{title}
+				</if>
+				<if test=”author != null and author.name != null”>
+					AND title like #{author.name}
+				</if>
+		</select>
+	●choose(when,otherwise)：它们3个配套使用，存在先后顺序。（和Java中的Switch语句相似[从上到下 选其一]，MyBatis提供 choose 元素）
+		<select id=”findActiveBlogLike” parameterType=”Blog” resultType=”Blog”>
+			SELECT * FROM BLOG WHERE state = „ACTIVE‟
+			<choose>
+				<when test=”title != null”>
+					AND title like #{title}
+				</when>
+				<when test=”author != null and author.name != null”>
+					AND title like #{author.name}
+				</when>
+				<otherwise>
+					AND featured = 1
+				</otherwise>
+			</choose>
+		</select>
+	●trim(where,set)：【trim：自定义格式；where：去除前面多余的AND|OR；set：去除无关的逗号】
+		▲<where>标签：
+			<select id=”findActiveBlogLike” parameterType=”Blog” resultType=”Blog”>
+				SELECT * FROM BLOG
+				<!-- where标签会去除跟在后面的and|or去掉！ -->
+				<where>
+					<if test=”state != null”>
+						state = #{state}
+					</if>
+					<if test=”title != null”>
+						AND title like #{title}
+					</if>
+					<if test=”author != null and author.name != null”>
+						AND title like #{author.name}
+					</if>
+				</where>
+			</select>
+		▲<trim>标签：
+			prefix=""：表示的是将trim标签内部SQL做一个拼接，然后在拼接后的SQL最前面加前缀。
+			prefixOverrides=""：表示的是将trim标签内部SQL做一个拼接，然后将多出来的前缀字符串覆盖掉（删掉）。
+			suffix=""：表示的是将trim标签内部SQL做一个拼接，然后在拼接后的SQL最后面加前缀。
+			suffixOverrides=""：表示的是将trim标签内部SQL做一个拼接，然后将多出来的后缀字符串覆盖掉（删掉）。
+		▲<set>标签：在更新的时用到。（会消除任意无关的逗号）
+			<update id="和方法名保持一致">
+				UPDATE employee
+				<set>
+					<if test="emp_name != null and emp_name !=''">
+						emp_name = #{empName},
+					</if>
+					<if test="email != null and email !=''">
+						email = #{email},
+					</if>
+					<if test="age != null and age !=''">
+						age = #{age}
+					</if>
+				</set>
+				<where>
+					<if test="id != null and id !=''">
+						id = #{id}
+					</if>
+				</where>
+			</update>
+	●foreach
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	

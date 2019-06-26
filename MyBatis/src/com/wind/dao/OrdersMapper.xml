@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wind.dao.OrdersMapper">
+	
+	<!-- public Orders getOrderById(Integer id); -->
+	<select id="getOrderById" resultType="com.wind.bean.Orders">
+		SELECT 
+			id,
+			order_name
+		FROM orders
+		WHERE id = #{dd}
+	</select>
+	
+	<!-- public List<Orders> getOrdersWithOrderItemsByOrderid(Integer id); -->
+	<resultMap type="com.wind.bean.Orders" id="getOrdersWithOrderItemsByOrderidResultMap">
+		<id column="id" property="id"/>
+		<result column="order_name" property="orderName"/>
+		<!--  
+			对多的解决方案，我们使用<collection>标签：
+				property：<resultMap的type指定对象的哪个属性是集合。
+				ofType：指定集合中元素的数据类型。
+		-->
+		<collection property="list" ofType="com.wind.bean.OrderItems">
+			<id column="bid" property="id"/>
+			<result column="order_item_name" property="orderItemName"/>
+		</collection>
+	</resultMap>
+	<select id="getOrdersWithOrderItemsByOrderid" resultMap="getOrdersWithOrderItemsByOrderidResultMap">
+		SELECT 
+			a.`id`,
+			a.`order_name`,
+			b.`id` bid,
+			b.`order_item_name`
+		FROM `orders` a
+			LEFT JOIN `order_items` b ON b.`order_id` = a.`id`
+		WHERE a.id = #{id}
+	</select>
+	
+	<!-- public List<Orders> getOrdersWithOrderItemsDuiDuo(Integer id); -->
+	<!-- 对多的分步查询 -->
+	<resultMap type="com.wind.bean.Orders" id="getOrdersWithOrderItemsDuiDuoResultMap">
+		<id column="id" property="id"/>
+		<result column="order_name" property="orderName"/>
+		<!-- 
+			select：指定<select>的id跟它相等的查询结果集，赋值给property的属性。
+		-->
+		<collection property="list" select="collectionSelect" column="id"></collection>
+	</resultMap>
+	<select id="getOrdersWithOrderItemsDuiDuo" resultMap="getOrdersWithOrderItemsDuiDuoResultMap">
+		SELECT 
+			`id`, 
+			`order_name`
+		FROM `orders`
+		WHERE id = #{id}
+	</select>
+	<select id="collectionSelect" resultType="com.wind.bean.OrderItems">
+		SELECT 
+			id, 
+			order_item_name "orderItemName", 
+			order_id "orders.id"
+		FROM `order_items`
+		WHERE `order_id` = #{dd}
+	</select>
+	
+	<update id="和方法名保持一致">
+		UPDATE employee
+		<set>
+			<if test="emp_name != null and emp_name !=''">
+				emp_name = #{empName},
+			</if>
+			<if test="email != null and email !=''">
+				email = #{email},
+			</if>
+			<if test="age != null and age !=''">
+				age = #{age}
+			</if>
+		</set>
+		<where>
+			<if test="id != null and id !=''">
+				id = #{id}
+			</if>
+		</where>
+	</update>
+</mapper>

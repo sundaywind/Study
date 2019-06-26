@@ -3,8 +3,19 @@
 <!-- 怎么让这个SQL映射文件跟对应的接口对应上：namespace="接口的全类名" -->
 <mapper namespace="com.wind.dao.OrderItemsMapper">
 	<!-- public OrderItems getOrderItemsById(Integer id); -->
-	<!-- 1）使用<ResultMap>标签 -->
-	<resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+	<!-- 1）正常开发，采用连缀方式 -->
+	<!-- <select id="getOrderItemsById" resultType="com.wind.bean.OrderItems">
+		SELECT 	
+			a.id "id",
+			a.order_item_name "orderItemName",
+			b.id "orders.id",
+			b.order_name "orders.orderName"
+		FROM order_items a
+			LEFT JOIN orders b ON b.id = a.order_id
+		WHERE a.id = #{id}
+	</select> -->
+	<!-- 2）使用<ResultMap>标签 -->
+	<!-- <resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
 		<id column="id" property="id"/>
 		<result column="order_item_name" property="orderItemName"/>
 		<result column="oid" property="orders.id"/>
@@ -19,16 +30,52 @@
 		FROM order_items a
 			LEFT JOIN orders b ON b.id = a.order_id
 		WHERE a.id = #{id}
-	</select>
-	
-	<!-- <select id="getOrderItemsById" resultType="com.wind.bean.OrderItems">
+	</select> -->
+	<!-- 3）使用<ResultMap>标签的<association>标签，处理对一的关联关系 -->
+	<!-- <resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+		<id column="id" property="id"/>
+		<result column="order_item_name" property="orderItemName"/>
+		<association property="orders" javaType="com.wind.bean.Orders">
+			<id column="oid" property="id"/>
+			<result column="order_name" property="orderName"/>
+		</association>
+	</resultMap>
+	<select id="getOrderItemsById" resultMap="getOrderItemsByIdResultMap">
 		SELECT 	
-			a.id "id",
-			a.order_item_name "orderItemName",
-			b.id "orders.id",
-			b.order_name "orders.orderName"
+			a.id,
+			a.order_item_name,
+			b.id oid,
+			b.order_name
 		FROM order_items a
 			LEFT JOIN orders b ON b.id = a.order_id
 		WHERE a.id = #{id}
 	</select> -->
+	<!-- 4）使用分步查询 -->
+	<resultMap type="com.wind.bean.OrderItems" id="getOrderItemsByIdResultMap">
+		<id column="id" property="id"/>
+		<result column="order_item_name" property="orderItemName"/>
+		<!--  
+			见到association还是处理对一的关联关系；
+			property：<resultMap type="" 的值哪个属性是对一的。
+			select：查询的SQL结果集赋值给 property="orders" 的属性。
+			column：将查询出来哪个列的值，作为id为ordersSelect的<select>标签查询语句的参数。
+		-->
+		<association property="orders" select="com.wind.dao.OrdersMapper.getOrderById" column="order_id"></association>
+	</resultMap>
+	<select id="getOrderItemsById" resultMap="getOrderItemsByIdResultMap">
+		SELECT
+			a.id,
+			a.order_item_name,
+			a.order_id
+		FROM order_items a
+		WHERE a.id = #{id}
+	</select>
+	<!-- <select id="ordersSelect" resultType="com.wind.bean.Orders">
+		SELECT 
+			id,
+			order_name
+		FROM orders
+		WHERE id = #{dd}
+	</select> -->
+	
 </mapper>

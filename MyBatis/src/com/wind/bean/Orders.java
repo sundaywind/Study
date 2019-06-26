@@ -1,10 +1,19 @@
 package com.wind.bean;
 
+import java.util.List;
+
 public class Orders {
 	
 	private Integer id;
 	private String orderName;
+	private List<OrderItems> list;
 	
+	public List<OrderItems> getList() {
+		return list;
+	}
+	public void setList(List<OrderItems> list) {
+		this.list = list;
+	}
 	public Integer getId() {
 		return id;
 	}
@@ -20,7 +29,7 @@ public class Orders {
 	
 	@Override
 	public String toString() {
-		return "Orders [id=" + id + ", orderName=" + orderName + "]";
+		return "Orders [id=" + id + ", orderName=" + orderName + ", list=" + list + "]";
 	}
 	
 }
