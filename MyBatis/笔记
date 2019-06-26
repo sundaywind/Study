@@ -707,7 +707,16 @@
 					</if>
 				</where>
 			</update>
-	●foreach
+	●<foreach>标签：通常使用在IN条件后。
+		<select id="selectPostIn" resultType="domain.blog.Post">
+			SELECT *
+			FROM POST P
+			WHERE ID in
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</select>
+		注意：你可以传递一个 List 实例或者数组作为参数对象传给 MyBatis。当你这么做的时候，MyBatis 会自动将它包装在一个 Map 中，用名称在作为键。List 实例将会以“list”作为键，而数组实例将会以“array”作为键。
 		
 		
 		
