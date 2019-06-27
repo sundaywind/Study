@@ -10,9 +10,11 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.jupiter.api.Test;
 
+import com.wind.bean.Employee;
 import com.wind.bean.OrderItems;
 import com.wind.bean.Orders;
 import com.wind.bean.User;
+import com.wind.dao.OneCacheDemo;
 import com.wind.dao.OrderItemsMapper;
 import com.wind.dao.OrdersMapper;
 import com.wind.dao.UserMapper;
@@ -132,5 +134,40 @@ public class TestAll {
 		List<Orders> ordersWithOrderItems = ordersMapper.getOrdersWithOrderItemsByOrderid(3);
 		System.out.println(ordersWithOrderItems);
 		openSession.close();
+	}
+	
+	/**
+		一级缓存失效的四种情况：（不失效的情况只有：SqlSession对象相同，查询条件也相同）
+			（1）SqlSession对象不同。
+				SqlSession openSession1 = sqlSessionFactory.openSession();
+				SqlSession openSession2 = sqlSessionFactory.openSession();
+				分别用不同的SqlSession去查同一数据：Employee employee = mapper.getEmpById(3);
+				肯定返回两条查询结果。
+			（2）SqlSession对象相同，查询条件不同。
+			（3）SqlSession对象相同，查询条件也相同，但是在两次查询之间做了增删改的操作。
+				为什么呢？<delete id="" flushCache="true"> 增删改默认开启刷新缓存，会清空一级缓存 需要同数据库保持一致。
+			（4）SqlSession对象相同，查询条件也相同，但在两次查询中间加了清除缓存操作。
+				openSession.clearCache();
+	*/
+	@Test
+	public void test08() throws IOException {
+		// 测试MyBatis缓存机制
+		String resource = "mybatis-config.xml";
+		InputStream inputStream = Resources.getResourceAsStream(resource);
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+		SqlSession sqlSession1 = sqlSessionFactory.openSession();
+		// SqlSession sqlSession2 = sqlSessionFactory.openSession();
+		OneCacheDemo mapper = sqlSession1.getMapper(OneCacheDemo.class);
+		// 第一次查
+		Employee employee1 = mapper.getEmpById(3);
+		System.out.println(employee1);
+		// openSession.clearCache();
+		// 第二次查
+		Employee employee2 = mapper.getEmpById(3);
+		System.out.println(employee2);
+		/*
+			输出了两次，结果SQL只发送了一次，说明存在缓存！
+		*/
+		sqlSession1.close();
 	}
 }

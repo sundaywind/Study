@@ -76,6 +76,8 @@
 		<setting name="lazyLoadingEnabled" value="true"/>
 		<!-- 只有设置为false的情况下，懒加载才正式生效 -->
 		<setting name="aggressiveLazyLoading" value="false"/>
+		<!-- 开启二级缓存 -->
+		<setting name="cacheEnabled" value="true"/>
 	</settings>
 	<!--  
 		<typeAliases>标签：用来给实体类起别名（建议使用全类名，不用别名处理器）

@@ -723,35 +723,209 @@
 				</foreach>
 			</select>
 			注意：你可以传递一个 List 实例或者数组作为参数对象传给 MyBatis。当你这么做的时候，MyBatis 会自动将它包装在一个 Map 中，用名称在作为键。List 实例将会以“list”作为键，而数组实例将会以“array”作为键。
-		▲插入时：批量插入。
-			
+		▲插入时：批量插入。（建议：在程序中，插入批量数据时，最好使用这种通过一条INSERT语句来一次性插入的方式。这样可以避免程序和数据库建立多次连接，从而增加服务器负荷。）
+			MySQL支持的批量插入格式：insert into employee(emp_name,gender,score,email) values(?,?,?,?),(?,?,?,?),(?,?,?,?),(?,?,?,?)...;
+			举个栗子：
+				接口：
+					public int batchInsert(List<Employee> asdf);	// 取值跟后面参数asdf无关，后台都用list取。 非要用asdf取的话用@("asdf")。
+				xml文件：
+					<insert id="batchInsert">
+						INSERT INTO employee(emp_name,gender,score,email)
+						VALUES
+						<!-- collection接收方法参数的集合，将List的每一个元素交给item，item是一个对象 连缀取值。每一次遍历用","逗号隔开。 -->
+						<foreach collection="list" item="emp" separator=",">
+							(#{emp.empName},#{emp.gender},#{emp.score},#{emp.email})
+						</foreach>
+					</insert>
+		▲扩展批量更新，批量删除：
+			批量更新：
+				UPDATE mytable
+				  SET myfield = CASE other_field
+				    WHEN 1 THEN 'value'
+				    WHEN 2 THEN 'value'
+				    WHEN 3 THEN 'value'
+				  END
+				WHERE id IN (1,2,3)
+				这样的SQL语句是很容易理解的，也就是用到了很多编程语言都有的关键字 CASE，根据id字段值来进行不同分支的当型判断，
+				如果你需要更新一行记录的多个字段，可以用以下SQL语句：
+				UPDATE categories
+				  SET display_order = CASE id
+				    WHEN 1 THEN 3
+				    WHEN 2 THEN 4
+				    WHEN 3 THEN 5
+				  END,
+				  title = CASE id
+				    WHEN 1 THEN 'New Title 1'
+				    WHEN 2 THEN 'New Title 2'
+				    WHEN 3 THEN 'New Title 3'
+				  END
+				WHERE id IN (1,2,3)
+				以上方案大大减少了数据库的查询操作次数，大大节约了系统资源。
+		========网络上MyBatis结合MySQL批量操作及查询SQL的总结====================================================================================================================================================
+		一、批量操作：
+			MySQL数据库 
+			批量操作主要使用的是Mybatis的foreach，遍历参数列表执行相应的操作，所以批量插入/更新/删除的写法是类似的，只是SQL略有区别而已。MySql批量操作需要数据库连接配置allowMultiQueries=true才可以。 
+			（0）批量查询：
+			<select id="selectUserDataList" parameterType="list" resultType="String">
+				select userData from tbl_hbb_user_info where mobile in (
+				<foreach collection="list" item="item" index="index" separator=",">
+				    #{item.mobile}
+				</foreach>
+				)
+			</select>
+			（1）批量插入  
+			<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true">  
+				<foreach close="" collection="list" index="index" item="item" open="" separator=";">  
+				    insert into user (name, age,dept_code) values  
+				    (#{item.name,jdbcType=VARCHAR},  
+				     #{item.age,jdbcType=INTEGER},  
+				     #{item.deptCode,jdbcType=VARCHAR}  
+				    )  
+				</foreach>  
+			</insert>  
+			上面演示的是MySql的写法(表主键自增的写法)，因为MySql支持主键自增，所以直接设置useGeneratedKeys=true，即可在插入数据时自动实现主键自增；
+			不需要自增时就不需要设置useGeneratedKeys，而且插入SQL包含所有字段即可。实际Mysql还有另外一种写法，就是拼接values的写法，这种方法我测试过比多条insert语句执行的效率会高些。
+			不过需要注意一次批量操作的数量做一定的限制。具体写法如下：  
+			<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true">  
+				insert into user (name, age,dept_code) values  
+				<foreach collection="list" index="index" item="item" open="" close="" separator=",">  
+				    (#{item.name,jdbcType=VARCHAR},  
+				    #{item.age,jdbcType=INTEGER},  
+				     #{item.deptCode,jdbcType=VARCHAR}  
+				    )  
+				</foreach>  
+			</insert>  
+			对于Oracle不支持主键自增，需要序列替换，所以在SQL写法上略有不同，需要在insert语句前加个 <selectKey>...</selectKey>告知Mybatis主键如何生成（selectKey中间的内容有省略，实际是生成主键的SQL）。 
+			（2）批量更新  
+			<update id="batchUpdate" parameterType="java.util.List">  
+				<foreach close="" collection="list" index="index" item="item" open="" separator=";">  
+				    update user set name=#{item.name,jdbcType=VARCHAR},age=#{item.age,jdbcType=INTEGER}  
+				    where id=#{item.id,jdbcType=INTEGER}  
+				</foreach>  
+			</update>  
+			（3）批量删除  
+			<delete id="batchDelete" parameterType="java.util.List">  
+				<foreach close="" collection="list" index="index" item="item" open="" separator=";">  
+				    delete from user  
+				    where id=#{item.id,jdbcType=INTEGER}  
+				</foreach>  
+			</delete>
+		二、模糊查询：
+			<select id="selectLikeName" parameterType="java.lang.String" resultMap="BaseResultMap">  
+				select  
+				<include refid="Base_Column_List" />  
+				from user  
+				where name like CONCAT('%',#{name},'%' )   
+			</select> 
+			上面的模糊查询语句是Mysql数据库的写法示例，用到了Mysql的字符串拼接函数CONCAT，其它数据库使用相应的函数即可。 
+		三、多条件查询：
+			多条件查询常用到Mybatis的if判断，这样只有条件满足时，才生成对应的SQL。  
+			<select id="selectUser" parameterType="map" resultMap="BaseResultMap">  
+				select  
+				<include refid="Base_Column_List" />  
+				from user  
+				<where>  
+				    <if test="name != null">  
+				        name = #{name,jdbcType=VARCHAR}  
+				    </if>  
+				    <if test="age != null">  
+				        and age = #{age,jdbcType=INTEGER}  
+				    </if>  
+				</where>  
+			</select>
+		四、联表查询 ：
+		联表查询在返回结果集为多张表的数据时，可以通过继承resultMap，简化写法。例如下面的示例，结果集在User表字段的基础上添加了Dept的部门名称
+			<resultMap id="ExtResultMap" type="com.research.mybatis.generator.model.UserExt" extends="BaseResultMap">  
+				<result column="name" jdbcType="VARCHAR" property="deptName" />  
+			</resultMap>      
+			<select id="selectUserExt" parameterType="map" resultMap="ExtResultMap">  
+		        select  
+		            u.*, d.name
+		        from user u inner join dept d on u.dept_code = d.code  
+		        <where>  
+		            <if test="name != null">  
+		                u.name = #{name,jdbcType=VARCHAR}  
+		            </if>  
+		            <if test="age != null">  
+		                and u.age = #{age,jdbcType=INTEGER}  
+		            </if>  
+		        </where>  
+			</select>  
+			<update id="stockDetailOkBatchUpdate" parameterType="map">
+			  <foreach collection="items" index="index" item="item" open="begin" close=";end;" separator=";">
+			      update T_MM_ADD_STOCK_DETAIL t
+			      set
+			      t.REMARK=#{item.remark},
+			      t.modify_time=sysdate,
+			      t.modify_user_code=#{currentUser}
+			      where t.id=#{item.id}
+			      <if test="index==items.size-1">
+			          ;
+			          update T_MM_ADD_STOCK t
+			          set
+			          t.modify_time=sysdate,
+			          t.modify_user_code=#{currentUser},
+			          t.remark=#{remark},
+			          t.STORAGE_STATE='待录价'
+			          where t.id=#{mainId}
+			      </if>
+			  </foreach>
+			</update>
 		
+30.MyBatis的缓存机制：
+	1）作用：用来加快查询速度！从内存中开辟了一块空间，然后作为集合【存放数据】。
+	2）MyBatis有两级缓存：
+		一级缓存（本地缓存）：SqlSession级别的缓存，默认开始，无法关闭。【一个SqlSession对应一个一级缓存】
+			/**
+				一级缓存失效的四种情况：（不失效的情况只有：SqlSession对象相同，查询条件也相同）
+					（1）SqlSession对象不同。
+						SqlSession openSession1 = sqlSessionFactory.openSession();
+						SqlSession openSession2 = sqlSessionFactory.openSession();
+						分别用不同的SqlSession去查同一数据：Employee employee = mapper.getEmpById(3);
+						肯定返回两条查询结果。
+					（2）SqlSession对象相同，查询条件不同。
+					（3）SqlSession对象相同，查询条件也相同，但是在两次查询之间做了增删改的操作。
+						为什么呢？<delete id="" flushCache="true"> 增删改默认开启刷新缓存，会清空一级缓存 需要同数据库保持一致。
+					（4）SqlSession对象相同，查询条件也相同，但在两次查询中间加了清除缓存操作。
+						openSession.clearCache();
+			*/
+			@Test
+			public void test08() throws IOException {
+				// 测试MyBatis缓存机制
+				String resource = "mybatis-config.xml";
+				InputStream inputStream = Resources.getResourceAsStream(resource);
+				SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+				SqlSession sqlSession1 = sqlSessionFactory.openSession();
+				// SqlSession sqlSession2 = sqlSessionFactory.openSession();
+				OneCacheDemo mapper = sqlSession1.getMapper(OneCacheDemo.class);
+				// 第一次查
+				Employee employee1 = mapper.getEmpById(3);
+				System.out.println(employee1);
+				// openSession.clearCache();
+				// 第二次查
+				Employee employee2 = mapper.getEmpById(3);
+				System.out.println(employee2);
+				/*
+					输出了两次，结果SQL只发送了一次，说明存在缓存！
+				*/
+				sqlSession1.close();
+			}
+		二级缓存（全局缓存）：Mapper映射文件的namespace级别的，默认是关闭的，可以手动开启或关闭。【一个接口映射文件是一个二级缓存】
+			二级缓存作用域：一级缓存失效的情况下。
+			开启设置：
+				（1）在mybatis的全局配置文件中配置开启二级缓存功能：
+					<setting name="cacheEnabled" value="true"/>
+				（2）在对应的mapper接口的SQL映射文件中加入一个cache标签：
+					<mapper namespace="com.wind.dao.OneCacheDemo">
+						<cache/>
+					</mapper>
+				（3）将保存到二级缓存中对象所属的类实现Serializable(序列化)接口：
+					public class Employee implements Serializable{}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	
+31.MyBatis逆向工程（MyBatis Generator）：
+	1）作用：根据数据库中的表，生成表对应的实体类、Mapper接口、xml映射文件。
+	2）不足：对有关联关系的表 无能无力。只能生成单表的。一般生产的话连表会消耗时间。
+	3）使用：
+		（1）将mybatisGenerator导入到工作空间。
+		（2）修改mybatisGenerator项目中的generatorConfig.xml配置文件，都有注释。
+		（3）修改好了，运行main方法。
