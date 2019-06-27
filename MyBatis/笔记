@@ -929,3 +929,4 @@
 		（1）将mybatisGenerator导入到工作空间。
 		（2）修改mybatisGenerator项目中的generatorConfig.xml配置文件，都有注释。
 		（3）修改好了，运行main方法。
+		（4）将生成好的代码，Copy到我们的工程中使用。
