@@ -6,12 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
-import org.apache.catalina.connector.Request;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -22,7 +18,6 @@ import com.wind.bean.SalesChance;
 import com.wind.bean.User;
 import com.wind.service.LoginService;
 import com.wind.service.SalesChanceService;
-import com.wind.utils.UserUtils;
 
 public class TestApp {
 
@@ -39,6 +34,7 @@ public class TestApp {
 	@Test
 	public void Test02() {
 		// 测试查询用户及角色、权限信息（我写的，垃圾！）
+		@SuppressWarnings("resource")
 		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
 		LoginService user = ac.getBean(LoginService.class);
 		System.out.println(user);
@@ -63,6 +59,7 @@ public class TestApp {
 	@Test
 	public void Test03() {
 		// 测试查询用户及角色、权限信息
+		@SuppressWarnings("resource")
 		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
 		LoginService bean = ac.getBean(LoginService.class);
 		User user = bean.verifyUserLogin("bcde", "4f6ed9e4ab25a6dac05933a8a0c5822ada8177e5");
@@ -74,14 +71,18 @@ public class TestApp {
 	
 	@Test
 	public void Test04() {
+		@SuppressWarnings("resource")
 		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
 		SalesChanceService bean = ac.getBean(SalesChanceService.class);
 		List<User> users = bean.getUsers();
+		System.out.println(users);
 		SalesChance chance = bean.getChangeById("625");
+		System.out.println(chance);
 	}
 	
 	@Test
 	public void Test05() {
+		@SuppressWarnings("resource")
 		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
 		SalesChanceService bean = ac.getBean(SalesChanceService.class);
 		SalesChance chance = new SalesChance();
