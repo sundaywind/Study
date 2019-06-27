@@ -1,6 +1,6 @@
 1.SpringMVC是Spring的一个模块（一个jar包：spring-webmvc-4.0.0.RELEASE.jar）
 
-2.SpringMVC工作在Web层（特点：接收浏览器发送的请求及参数）
+2.SpringMVC工作在Web层（特点：接收并返回 浏览器发送的请求及参数）
 
 3.SpringMVC的优势？（与Struts2相比）
 	1）为展示层提供基于MVC设计理念的优秀Web框架，是目前最流行的MVC框架之一
