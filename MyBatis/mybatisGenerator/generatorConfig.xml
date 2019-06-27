@@ -4,13 +4,11 @@
   "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <generatorConfiguration>
-	<!-- 
-		无Example等内容
-<context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">	-->
-	 
-	 
-	 <!-- 有Example查询条件内容 -->
-	<context id="testTables" targetRuntime="MyBatis3">
+	
+	<!-- 无Example等内容 -->
+	<context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">	
+	 <!-- 有Example查询条件内容 
+	<context id="testTables" targetRuntime="MyBatis3">-->
 		<commentGenerator>
 			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
 			<property name="suppressAllComments" value="true" />
@@ -19,19 +17,18 @@
 		<!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
 		<jdbcConnection 
 			driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://localhost:3306/java0416" 
+			connectionURL="jdbc:mysql://106.13.108.29:3306/mysql" 
 			userId="root"
-			password="root">
+			password="7758521">
 		</jdbcConnection>
 
-		<!-- 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL 和 
-			NUMERIC 类型解析为java.math.BigDecimal -->
+		<!-- 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL 和  NUMERIC 类型解析为java.math.BigDecimal -->
 		<javaTypeResolver>
 			<property name="forceBigDecimals" value="false" />
 		</javaTypeResolver>
 
 		<!-- targetProject:生成Entity类的路径 -->
-		<javaModelGenerator targetProject=".\src" targetPackage="com.offcn.crm.bean">
+		<javaModelGenerator targetProject=".\src" targetPackage="com.wind.bean">
 			<!-- enableSubPackages:是否让schema作为包的后缀 -->
 			<property name="enableSubPackages" value="false" />
 			<!-- 从数据库返回的值被清理前后的空格 -->
@@ -39,20 +36,23 @@
 		</javaModelGenerator>
 		
         <!-- targetProject:XXXMapper.xml映射文件生成的路径 -->
-		<sqlMapGenerator targetProject=".\src" targetPackage="com.offcn.crm.dao">
+		<sqlMapGenerator targetProject=".\src" targetPackage="com.wind.dao">
 			<!-- enableSubPackages:是否让schema作为包的后缀 -->
 			<property name="enableSubPackages" value="false" />
 		</sqlMapGenerator>
 		
 		<!-- targetPackage：Mapper接口生成的位置 -->
-		<javaClientGenerator type="XMLMAPPER" targetProject=".\src" targetPackage="com.offcn.crm.dao">
+		<javaClientGenerator type="XMLMAPPER" targetProject=".\src" targetPackage="com.wind.dao">
 			<!-- enableSubPackages:是否让schema作为包的后缀 -->
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
 		
+		<!-- 需要生成哪张表及对应的实体类名，得自己写 -->
 		<!-- 数据库表名字和我们的entity类对应的映射指定 -->
-		<table tableName="sys_dic" 	domainObjectName="SysDic"/>
-	
+		<table tableName="columns_priv" domainObjectName="ColumnsPriv"/>
+		<table tableName="db" domainObjectName="Db"/>
+		<table tableName="event" domainObjectName="Event"/>
+		<table tableName="func" domainObjectName="Func"/>
 		
 		<!-- 有些表的字段需要指定java类型
 		 <table schema="" tableName="">

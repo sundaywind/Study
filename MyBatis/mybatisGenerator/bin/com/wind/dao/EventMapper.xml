@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wind.dao.EventMapper" >
+  <resultMap id="BaseResultMap" type="com.wind.bean.Event" >
+    <id column="db" property="db" jdbcType="CHAR" />
+    <id column="name" property="name" jdbcType="CHAR" />
+    <result column="definer" property="definer" jdbcType="CHAR" />
+    <result column="execute_at" property="executeAt" jdbcType="TIMESTAMP" />
+    <result column="interval_value" property="intervalValue" jdbcType="INTEGER" />
+    <result column="interval_field" property="intervalField" jdbcType="CHAR" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="modified" property="modified" jdbcType="TIMESTAMP" />
+    <result column="last_executed" property="lastExecuted" jdbcType="TIMESTAMP" />
+    <result column="starts" property="starts" jdbcType="TIMESTAMP" />
+    <result column="ends" property="ends" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="on_completion" property="onCompletion" jdbcType="CHAR" />
+    <result column="sql_mode" property="sqlMode" jdbcType="CHAR" />
+    <result column="comment" property="comment" jdbcType="CHAR" />
+    <result column="originator" property="originator" jdbcType="INTEGER" />
+    <result column="time_zone" property="timeZone" jdbcType="CHAR" />
+    <result column="character_set_client" property="characterSetClient" jdbcType="CHAR" />
+    <result column="collation_connection" property="collationConnection" jdbcType="CHAR" />
+    <result column="db_collation" property="dbCollation" jdbcType="CHAR" />
+    <result column="body" property="body" jdbcType="LONGVARBINARY" />
+    <result column="body_utf8" property="bodyUtf8" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map" >
+    delete from event
+    where db = #{db,jdbcType=CHAR}
+      and name = #{name,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wind.bean.Event" >
+    insert into event (db, name, definer, execute_at, 
+      interval_value, interval_field, created, 
+      modified, last_executed, starts, 
+      ends, status, on_completion, 
+      sql_mode, comment, originator, 
+      time_zone, character_set_client, collation_connection, 
+      db_collation, body, body_utf8
+      )
+    values (#{db,jdbcType=CHAR}, #{name,jdbcType=CHAR}, #{definer,jdbcType=CHAR}, #{executeAt,jdbcType=TIMESTAMP}, 
+      #{intervalValue,jdbcType=INTEGER}, #{intervalField,jdbcType=CHAR}, #{created,jdbcType=TIMESTAMP}, 
+      #{modified,jdbcType=TIMESTAMP}, #{lastExecuted,jdbcType=TIMESTAMP}, #{starts,jdbcType=TIMESTAMP}, 
+      #{ends,jdbcType=TIMESTAMP}, #{status,jdbcType=CHAR}, #{onCompletion,jdbcType=CHAR}, 
+      #{sqlMode,jdbcType=CHAR}, #{comment,jdbcType=CHAR}, #{originator,jdbcType=INTEGER}, 
+      #{timeZone,jdbcType=CHAR}, #{characterSetClient,jdbcType=CHAR}, #{collationConnection,jdbcType=CHAR}, 
+      #{dbCollation,jdbcType=CHAR}, #{body,jdbcType=LONGVARBINARY}, #{bodyUtf8,jdbcType=LONGVARBINARY}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wind.bean.Event" >
+    update event
+    set definer = #{definer,jdbcType=CHAR},
+      execute_at = #{executeAt,jdbcType=TIMESTAMP},
+      interval_value = #{intervalValue,jdbcType=INTEGER},
+      interval_field = #{intervalField,jdbcType=CHAR},
+      created = #{created,jdbcType=TIMESTAMP},
+      modified = #{modified,jdbcType=TIMESTAMP},
+      last_executed = #{lastExecuted,jdbcType=TIMESTAMP},
+      starts = #{starts,jdbcType=TIMESTAMP},
+      ends = #{ends,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=CHAR},
+      on_completion = #{onCompletion,jdbcType=CHAR},
+      sql_mode = #{sqlMode,jdbcType=CHAR},
+      comment = #{comment,jdbcType=CHAR},
+      originator = #{originator,jdbcType=INTEGER},
+      time_zone = #{timeZone,jdbcType=CHAR},
+      character_set_client = #{characterSetClient,jdbcType=CHAR},
+      collation_connection = #{collationConnection,jdbcType=CHAR},
+      db_collation = #{dbCollation,jdbcType=CHAR},
+      body = #{body,jdbcType=LONGVARBINARY},
+      body_utf8 = #{bodyUtf8,jdbcType=LONGVARBINARY}
+    where db = #{db,jdbcType=CHAR}
+      and name = #{name,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map" >
+    select db, name, definer, execute_at, interval_value, interval_field, created, modified, 
+    last_executed, starts, ends, status, on_completion, sql_mode, comment, originator, 
+    time_zone, character_set_client, collation_connection, db_collation, body, body_utf8
+    from event
+    where db = #{db,jdbcType=CHAR}
+      and name = #{name,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select db, name, definer, execute_at, interval_value, interval_field, created, modified, 
+    last_executed, starts, ends, status, on_completion, sql_mode, comment, originator, 
+    time_zone, character_set_client, collation_connection, db_collation, body, body_utf8
+    from event
+  </select>
+</mapper>
