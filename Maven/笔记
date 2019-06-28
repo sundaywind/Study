@@ -121,7 +121,7 @@
 			②使用三个向量在Maven仓库中唯一的定位一个Maven工程：（GAV）
 				向量groupId：公司或组织的名称+项目名称	【<groupId>com.neuedu.maven</groupId>】
 				向量artifactId：项目名称-模块名称		【<artifactId>Hello</artifactId>】
-				向量version：模块版本					【<version>0.0.1-SNAPSHOT</version>】（快照版（开发）：SNAPSHOT；上线版（上线）：Release）
+				向量version：模块版本			 【<version>0.0.1-SNAPSHOT</version>】（快照版（开发）：SNAPSHOT；上线版（上线）：Release）
 				packaging：定义该项目的打包方式 jar,war	【<packaging>maven-plugin</packaging>】
 			③如何根据坐标找到仓库中查找对应的Maven工程：
 				坐标：
