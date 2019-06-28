@@ -1,27 +1,271 @@
-简介：
-   什么是maven
-    是apache下的一个开源项目，是纯java开发，并且只是用来管理java项目的.
-	
-	1.自动化构建和项目管理工具
-		Ant→Make→Maven→Gradle
+1.Maven简介：项目管理工具；是apache下的一个开源项目，是纯Java开发，并且只是用来管理Java项目的（Maven仅仅适用于Java项目！）。
 
-	2.Maven概述
-		①读音：妹文、麦文
-		②Maven作用一：自动化构建
-		③Maven作用二：依赖管理[多了重复、少了报错]
-		④Maven作用三：项目信息管理
+2.自动化构建和项目管理工具：
+	Ant → Make → Maven → Gradle
+
+3.Maven作用：
+	①读音：妹文、麦文。
+	②Maven作用一：自动化构建（项目构建）									（清理）    （编译）	   （测试）（测试报告）        （打包）			  （部署）
+		构建[build]：将我们开发的Java源码到把项目部署到服务器（tomcat、netty）上的过程。【clean → compile → test(testReport) → package(war、jar) → deploy】（将程序员编写的代码从源文件到服务器部署的整个过程）
+		自动化构建：把构建整个过程，交给一个自动化工具完成。（将构建过程中的各个操作步骤交给构建工具自动完成）
+	③Maven作用二：依赖管理[多了重复、少了报错]。
+	④Maven作用三：项目信息管理。
 	
-	3.自动化构建
-		①构建[build]：将程序员编写的代码从源文件到服务器部署的整个过程。
-			清理→编译→测试→报告→打包→部署→运行……
-		②自动化构建：将构建过程中的各个操作步骤交给构建工具自动完成。
+4.Maven的安装：
+	①要求当前系统环境下配置了JAVA_HOME（在CMD命令行中输入：echo %JAVA_HOME% 如果能出来JDK的安装目录，说明我们配置了JAVA环境）
+	②将Maven的ZIP压缩包解压到一个非中文无空格目录下（剪切到安装目录）【maven.apache.org官方网站下载jar包（apache-maven-3.3.9-bin.zip）】
+	③.配置环境变量，用mvn -v查看是否正确配置了maven【要配置jdk，  maven3.3.9这个版本所需的jdk版本必须要1.7以上】
+		M2_HOME（或MAVEN_HOME）：F:\Wind\DevSoft\apache-maven-3.6.0
+		path：D:\DevSoft\apache-maven-3.3.9\bin
+		cmd命令行，用 mvn -v 查看maven版本。
+			
+5.Maven的优势： 
+	1）统一的jar包管理（把所有项目所需的jar包放在同一地方），节省空间（将jar包放在Maven库中，使用的时候引用一下，不需要像以前一样 复制粘贴jar包到项目中的 /WEB-INF/lib目录下 节省空间）
+	2）项目之间可以互相调用（依赖管理）。
+	3）Maven还可以完成自动化构建。
+	4）Maven是支持跨平台【Windows、Linux（稳定）】
+
+6.Maven运行的命令：
+	mvn clean --------------（清理）指的是将生成的target目录清理掉（编译后的.class文件）
+	mvn compile ------------（编译）由java源码生成.class字节码文件
+	mvn test ---------------（测试）执行src/test/java目录下的测试类的测试方法
+	mvn package ------------（打包）将当前项目打成包【jar包、war包】
+	mvn install ------------（安装）将当前项目生成的包【jar包、war包】放入到本地仓库中！
+	
+7.我们已经安装了Maven，运行时为什么还要下载？
+	Maven主程序只是负责宏观调度，Maven具体命令的执行（做事的）所需依赖Maven的插件。
+	
+8.第一个Maven程序（我的电脑、cmd操作）：（Maven之所以能够实现“自动化”构建，就是因为它有一套“约定”的目录结构，源文件、二进制文件以及其他资源都有指定目录进行存储）
+	1）首先建立Hello项目同时建立Maven约定的目录结构：
+		Hello
+		 --src
+		 -----main
+		 ---------java
+		 ---------resources
+		 -----test
+		 ---------java
+		 ---------resources
+		 --pom.xml
+	2）修改pom.xml文件：
+		<?xml version="1.0" ?>
+		<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+			<modelVersion>4.0.0</modelVersion>
+			<groupId>com.offcn.maven</groupId>
+			<artifactId>Hello</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<name>Hello</name>
+			<dependencies>
+				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>4.0</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</project>
+	3）在src/main/java/com/offcn/maven目录下新建文件Hello.java
+		package com.offcn.maven;
+		public class Hello {
+			public String sayHello(String name){
+				return "Hello "+name+"!";
+			}
+		}
+	4）在/src/test/java/com/offcn/maven目录下新建测试文件HelloTest.java
+		package com.offcn.maven;
+		import org.junit.Test;
+		import static junit.framework.Assert.*;
+		public class HelloTest {
+			@Test
+			public void testHello(){
+				Hello hello = new Hello();
+				String results = hello.sayHello("litingwei");
+				assertEquals("Hello litingwei!",results);		
+			}
+		}
+	5）测试：
+		①打开cmd命令行，进入Hello项目根目录（pom.xml文件所在目录）执行 mvn compile命令，查看根目录变化。
+		②cmd 中继续录入mvn clean命令，然后再次查看根目录变化。
+		③cmd 中继续录入 mvn clean compile命令，查看根目录变化。
+		④cmd 中继续录入 mvn clean test命令，查看target目录变化。
+		⑤cmd 中继续录入 mvn clean package命令，查看target目录变化。
+
+9.Maven本地仓库:用来存放jar包或者插件：
+	默认路径：C:\Users/当前用户/.m2/repository，通常本地仓库不会放在C盘。
+	修改本地仓库的默认位置：Maven安装目录下 /conf/settings.xml
+	修改： <localRepository>D:\repository\maven</localRepository>	
+	
+10.Maven仓库：[仓库里存放的是jar包或者插件]
+	1）本地仓库：在当前计算机上，设置的文件夹。
+	2）远程仓库：
+		私服：公司内部大家一起使用的服务器。（本公司的）
+		中央仓库：全世界都在使用的仓库，目前在美国。（https://mvnrepository.com/）
+		中央仓库镜像：在全世界各个州，都存在一个仓库，内容和中央仓库中的内容一致，减小中央仓库的压力， 同时提升下载的速度。	
+		阿里巴巴镜像：
+		  <mirrors>
+		    <mirror>
+		      <id>alimaven</id>
+		      <mirrorOf>central</mirrorOf>
+		      <name>aliyun maven</name>
+		      <url>http://maven.aliyun.com/nexus/content/repositories/central/</url>
+		    </mirror>
+		  </mirrors>
+
+11.Maven必须熟知的概念：
+	1）Project Object Model项目对象模型：
+		①Maven将一个Java工程的相关信息封装后得到的对象。简称POM。
+		②POM配置集中体现在pom.xml文件中，作为一个Maven工程，pom.xml是最核心的配置文件，作用相当于动态Web工程的web.xml。
+	2）坐标：
+			①数学坐标：平面中使用横纵两个坐标系可以唯一的定位平面中的任何一个点。
+				向量x：横坐标
+				向量y：纵坐标
+			②使用三个向量在Maven仓库中唯一的定位一个Maven工程：（GAV）
+				向量groupId：公司或组织的名称+项目名称	【<groupId>com.neuedu.maven</groupId>】
+				向量artifactId：项目名称-模块名称		【<artifactId>Hello</artifactId>】
+				向量version：模块版本					【<version>0.0.1-SNAPSHOT</version>】（快照版（开发）：SNAPSHOT；上线版（上线）：Release）
+				packaging：定义该项目的打包方式 jar,war	【<packaging>maven-plugin</packaging>】
+			③如何根据坐标找到仓库中查找对应的Maven工程：
+				坐标：
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+					<version>4.0.0.RELEASE</version>
+				仓库中的路径：
+					org/springframework/spring-core/4.0.0.RELEASE/spring-core-4.0.0.RELEASE.jar
+			④如何查找指定jar包的坐标：
+				从Maven仓库下载：
+					http://mvnrepository.com/【建议使用这个】
+				    http://search.maven.org/
+	3）Maven项目约定的目录结构：
+		ProjectName
+		   -src					【存放我们编写的源代码】
+			   -main			【存放项目运行的源代码】
+				   -java		【我们写java源码】		（存放项目的.java文件）
+						-package【建包、建类】
+				   -resources	【配置文件或者说资源文件】	（存放项目资源文件，如spring, hibernate配置文件）
+			   -test			【存放的是我们写的测试代码】
+				   -java		【测试源码】				（存放所有测试.java文件，如JUnit测试类）
+						-package【建包、建类】
+			       -resources	【测试代码需要的配置文件】	（测试资源文件）
+			-target				【项目输出位置[编译后可以自动生成]】
+			pom.xml				【Maven配置、依赖】
+	4）依赖管理：Maven的依赖主要是指的jar包依赖。Maven依赖是靠pom.xml中dependencies/dependency标签来确定的！
+	5）仓库管理
+	6）Maven的生命周期：（Maven为了能够将构建过程自动化处理，定义了三个主要的生命周期。其中定义了相关的构建过程。）
+		生命周期的每个命令在执行的时候都是从当前生命周期的最开始一个命令执行。【执行package，会从开始的clean、compile、package执行】（每个生命周期中执行任何一个操作，都是从这个生命周期最初的位置开始执行，直到到达命令指定的位）
+		   1)clean生命周期【]清理周期】
+				①pre-clean 	执行一些需要在clean之前完成的工作 
+				②clean 		移除所有上一次构建生成的文件 
+				③post-clean 执行一些需要在clean之后立刻完成的工作 
+			  mvn clean
+		   2)default生命周期【默认周期】
+			  mvn compile：	编译:由java源码生成.class字节码文件
+			  mvn test：		测试 :执行src/test/java目录下的测试类的测试方法
+			  mvn package：	打包:将当前项目打成包【jar包、war包】
+			  mvn install
+		   3)site生命周期【站点周期】
+				①pre-site：		执行一些需要在生成站点文档之前完成的工作
+				②site：			生成项目的站点文档
+				③post-site：	执行一些需要在生成站点文档之后完成的工作，并且为部署做准备
+				④site-deploy：	将生成的站点文档部署到特定的服务器上
+		      mvn site
+	7）插件和目标
+	8）聚合和继承
+
+12.第二个Maven工程（我的电脑、cmd操作）：
+	1）新建第二个项目模块目录及约定的目录结构：
+		HelloFriend
+			 --src
+			 -----main
+			 ---------java
+			 ---------resources
+			 -----test
+			 ---------java
+			 ---------resources
+			 --pom.xml
+	2）在项目HelloFriend根目录修改pom.xml：
+		<?xml version="1.0" ?>
+		<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		  <modelVersion>4.0.0</modelVersion>
+		  <groupId>com.offcn.maven</groupId>
+		  <artifactId>HelloFriend</artifactId>
+		  <version>0.0.1-SNAPSHOT</version>
+		  <name>HelloFriend</name>
+			<dependencies>
+				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>4.0</version>
+					<scope>test</scope>
+				</dependency>		
+				<dependency>
+					<groupId>com.offcn.maven</groupId>
+					<artifactId>Hello</artifactId>
+					<version>0.0.1-SNAPSHOT</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+		</project>
+	3）在src/main/java/com/offcn/maven目录下新建文件HelloFriend.java
+		package com.offcn.maven;
+		import com.offcn.maven.Hello;
+		public class HelloFriend {
+			public String sayHelloToFriend(String name){
+				Hello hello = new Hello();
+				String str = hello.sayHello(name)+" I am "+this.getMyName();
+				System.out.println(str);
+				return str;
+			}
+			public String getMyName(){
+				return "John";
+			}
+		}
+	4）在/src/test/java/com/offcn/maven目录下新建测试文件HelloFriendTest.java
+	5）在HelloFriend目录下执行命令：mvn package
+		系统报错说没有找到依赖（第一个Maven工程的jar包：没安装在本地仓库）。所有依赖的JAR包都应该正确安装到当前的Maven仓库中才能够使用，换句话说，Maven项目都是到当前仓库中去寻找它所依赖的JAR包的。
+	6）需要重新构建Hello第一个项目并安装到数据仓库，在命令行Hello根目录下执行：mvn clean install
+	7）重新在HelloFriend目录下执行命令：mvn package
+	8）执行其他常用命令：site
 		
-	Maven的好处？
-	   节省空间
-	   就是对jar包的统一管理就是对jar包的统一管理，依赖管理
-	   一键构建，
-	   可跨平台
- 
+13.Eclipse中整合Maven：
+	1）打开Window --> Preferences --> Maven --> Installations（安装Maven）
+	2）User Settings --> 找到自己安装目录下的 /conf/settings.xml --> 点击[Update Settings]
+	
+14.Maven项目创建：
+	1）普通Java工程：
+		（1）New Maven Project 	【Next】
+		（2）选择quickstart 1.1	【Next】
+		（3）填写GroupId、ArtifactId[项目名显示]、Version[保持默认]、Package[写Java代码的包名]。【Finish】
+	2）动态Web工程（有web.xml文件的）：
+		（1）New Maven Project 	【Next】
+		（2）选择webapp 1.0		【Next】
+		（3）填写GroupId、ArtifactId[项目名显示]、Version[保持默认]、Package[写Java代码的包名]。【Finish】
+	3）正常情况下，以上两种都不会使用 少目录，创建的时候会勾选Create a simple project（第一个复选框）
+		Maven的工程分类：
+			jar工程：如果我们当前项目打成的包需要被别的项目依赖或者引用，就打成jar包。
+			pom工程：父工程，聚合工程。
+			war工程：如果当前项目需要部署到服务器上的时候，就打成war包！
+				会报错，缺少web.xml文件：
+					①手动添加；
+					②自动生成：右键项目名 ---> Java EE Tools ---> Generate Deployment Descriptor Stub
+		软件三层架构对应的Maven工程：
+			Controller【war包】 ---> Service【jar包】 ---> Dao【jar包】
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+====================================================================================================================================================
+====================================================================================================================================================
+====================================================================================================================================================
  Maven的配置
 	4.依赖管理
 		①依赖复杂性
@@ -91,39 +335,8 @@
 
 		
 						  
-	6.Maven程序本身安装
-		①要求当前系统环境下配置了JAVA_HOME
-			在CMD命令行中输入：echo %JAVA_HOME% 如果能出来JDK的安装目录，说明我们配置了JAVA环境
-		
-		②将Maven的ZIP压缩包解压到一个非中文无空格目录下【maven.apache.org官方网站下载jar包】
-			apache-maven-3.3.9-bin.zip
-		
-		③.配置环境变量，用mvn -v查看是否正确配置了maven【要配置jdk，  maven3.3.9这个版本所需的jdk版本必须要1.7以上】
-			path:
-				D:\DevSoft\apache-maven-3.3.9\bin
-			mvn -v查看maven版本
-			
-			
-	
-		④.先了解一下maven的目录结构：
-			projectname
-			   -src
-				   -main
-					   -java
-							-package
-					   -resources【配置文件或者说资源文件】
-				   -test
-					   -java
-							-package
-				       -resources
-				pom.xml
-				
-			按照上面的maven的目录结构创建一个maven项目，参照word文档！
-			
-			
-		⑤当针对某个Maven工程执行诸如“编译”、“测试”、“打包”、“部署”等命令时，需要进入到pom.xml所在的目录下执行。
-		   mvn compile
-		
+
+
 		
 		
 	7.关于Maven联网
@@ -158,24 +371,8 @@
 										  -Dversion=版本号
 										  -Dpackage=代码所存在的包名
 								  
-							 
-	8.Project Object Model项目对象模型
-		①Maven将一个Java工程的相关信息封装后得到的对象。简称POM。
-		②POM配置集中体现在pom.xml文件中，作为一个Maven工程，pom.xml是最核心的配置文件，作用相当于动态Web工程的web.xml。
-		
-		
-	9.约定的目录结构
-		①Maven之所以能够实现自动化构建，其中一个很重要的原因是要求将特定的文件保存在指定的目录中。
-			Hello [工程根目录]
-			  --src [存放源代码文件]
-					-----main [存放主程序目录]
-						---------java [存放.java源文件]
-						---------resources [资源文件或配置文件]
-					-----test [存放测试程序目录]
-						---------java [存放.java源文件]
-						---------resources [资源文件或配置文件]
-			  --pom.xml 核心配置文件]
-		②思想：Convention Over Configuration 约定优于配置
+	
+
 
 		
 	10.maven的几个概念：
@@ -650,8 +847,30 @@ import                                                                         �
 
 		  设置好了之后更新一下项目就好了！
 		  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		  
-		  
+		编译期：       测试期：       运行期：            说明：
+compile       √         √         √         默认范围
+provided      √         √                   如jsp-api.jarservlet-api.jar,运行期由web容器提供。
+runtime                 √         √         编译期无需直接引用,只在测试和运行时有效，例如jdbc驱动类。
+test                              √         只在测试的时候有效，如junit.jar。
+system        √         √                   与本地系统相关联，可移植性差。必须通过<systemPath></systemPath>元素，显示指定依赖文件的路径，如本机的JAVA_HOME路径，移植到其它机器就可能导致错误！
+import                                      表示是继承父POM.XML中的依赖范围设置，只能使用在<dependencyManagement> 这个标签中。		  
 ==========================================工作了不用我们管这些jar包的pom文件===============================
 如果一定要查：可以在百度上直接搜索：ssm pom.xml直接改改版本号就可以了！
 	http://doc.okbase.net/Naploen8/archive/124775.html
@@ -683,14 +902,13 @@ import                                                                         �
 		3.构件的依赖范围。Maven在项目的构建过程中，会编译三套classpath，当我们需要引用某个类的时候，只需要将包含某个类的jar包加入到classpath中即可，maven在这里为我们提供了
 		                  三种classpath，分别对应：编译期，运行期，测试期。而依赖范围，就是为构件指定它可以作用于哪套classpath。
 
-						  编译期           测试期            运行期            说明
-compile                     √               √                 √                默认范围
-provided                    √               √                               如jsp-api.jarservlet-api.jar,运行期由web容器提供
-runtime                                     √                 √             	   
-																	  编译期无需直接引用,只在测试和运行时有效，例如jdbc驱动类。
-test                                        √                          只在测试的时候有效，如junit.jar
-system                      √               √                                  与本地系统相关联，可移植性差。必须通过<systemPath></systemPath>元素，显示指定依赖文件的路径，如本机的JAVA_HOME路径，移植到其它机器就可能导致错误！
-import                                                                         表示是继承父POM.XML中的依赖范围设置，只能使用在<dependencyManagement> 这个标签中。
+			编译期：       测试期：       运行期：            说明：
+compile       √         √         √         默认范围
+provided      √         √                   如jsp-api.jarservlet-api.jar,运行期由web容器提供。
+runtime                 √         √         编译期无需直接引用,只在测试和运行时有效，例如jdbc驱动类。
+test                              √         只在测试的时候有效，如junit.jar。
+system        √         √                   与本地系统相关联，可移植性差。必须通过<systemPath></systemPath>元素，显示指定依赖文件的路径，如本机的JAVA_HOME路径，移植到其它机器就可能导致错误！
+import                                      表示是继承父POM.XML中的依赖范围设置，只能使用在<dependencyManagement> 这个标签中。
 	
 			
 			
@@ -799,15 +1017,7 @@ import                                                                         �
 			
 			
 			
-	maven的好处
-      依赖管理，对jar包的统一管理，可以节省空间
-      一键构建
-      可以跨平台
-      应用于大型项目，可以提高开发效率
-	   用户管理         订单管理       支付管理         ...
-	   maven的分模块开发
-	   互联网项目     按业务分
-	   传统项目       按层分   
+
 			
 			
 9.Maven
@@ -862,17 +1072,7 @@ import                                                                         �
   使用tomcat插件的时候，会有个小bug,当我们打断点调试的时候，当程序到达断点，但是当我们查看源码的时候，发现原本的源码找不到啦，我们只需要在弹出来的小
   图标中点击Edit Source Lookup Path;，然后再弹出的窗口中选择java project（这里不是选择project哦，而是java protect），然后找到对应的java项目，点击ok，然后重启项目就好！
   
-  
-  
-  
-  注意：每个进程对应一个 端口号，在java中也就对应一个main方法，一个进程中有多个线程！
-  
-  
-  
-  
-  
-  一个tomcat的并发是600左右，所以互联网项目中出现高并发的时候，一个tomcat就顶不住了，这时候就需要构建tomcat集群！
-  但是这时候通常我们在tomcat集群前面有一个负载均衡服务器！
+
   
   
   
