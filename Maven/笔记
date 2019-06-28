@@ -158,7 +158,7 @@
 			  mvn clean
 		   2)default生命周期【默认周期】
 			  mvn compile：	编译:由java源码生成.class字节码文件
-			  mvn test：		测试 :执行src/test/java目录下的测试类的测试方法
+			  mvn test：	测试 :执行src/test/java目录下的测试类的测试方法
 			  mvn package：	打包:将当前项目打成包【jar包、war包】
 			  mvn install
 		   3)site生命周期【站点周期】
