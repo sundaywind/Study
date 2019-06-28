@@ -138,13 +138,13 @@
 		ProjectName
 		   -src					【存放我们编写的源代码】
 			   -main			【存放项目运行的源代码】
-				   -java		【我们写java源码】		（存放项目的.java文件）
+				   -java		【我们写java源码】（存放项目的.java文件）
 						-package【建包、建类】
-				   -resources	【配置文件或者说资源文件】	（存放项目资源文件，如spring, hibernate配置文件）
+				   -resources		【配置文件或者说资源文件】（存放项目资源文件，如spring, hibernate配置文件）
 			   -test			【存放的是我们写的测试代码】
-				   -java		【测试源码】				（存放所有测试.java文件，如JUnit测试类）
+				   -java		【测试源码】（存放所有测试.java文件，如JUnit测试类）
 						-package【建包、建类】
-			       -resources	【测试代码需要的配置文件】	（测试资源文件）
+			       -resources		【测试代码需要的配置文件】（测试资源文件）
 			-target				【项目输出位置[编译后可以自动生成]】
 			pom.xml				【Maven配置、依赖】
 	4）依赖管理：Maven的依赖主要是指的jar包依赖。Maven依赖是靠pom.xml中dependencies/dependency标签来确定的！
@@ -154,7 +154,7 @@
 		   1)clean生命周期【]清理周期】
 				①pre-clean 	执行一些需要在clean之前完成的工作 
 				②clean 		移除所有上一次构建生成的文件 
-				③post-clean 执行一些需要在clean之后立刻完成的工作 
+				③post-clean 	执行一些需要在clean之后立刻完成的工作 
 			  mvn clean
 		   2)default生命周期【默认周期】
 			  mvn compile：	编译:由java源码生成.class字节码文件
@@ -162,8 +162,8 @@
 			  mvn package：	打包:将当前项目打成包【jar包、war包】
 			  mvn install
 		   3)site生命周期【站点周期】
-				①pre-site：		执行一些需要在生成站点文档之前完成的工作
-				②site：			生成项目的站点文档
+				①pre-site：	执行一些需要在生成站点文档之前完成的工作
+				②site：		生成项目的站点文档
 				③post-site：	执行一些需要在生成站点文档之后完成的工作，并且为部署做准备
 				④site-deploy：	将生成的站点文档部署到特定的服务器上
 		      mvn site
