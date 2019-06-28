@@ -236,7 +236,7 @@
 		（3）填写GroupId、ArtifactId[项目名显示]、Version[保持默认]、Package[写Java代码的包名]。【Finish】
 	2）动态Web工程（有web.xml文件的）：
 		（1）New Maven Project 	【Next】
-		（2）选择webapp 1.0		【Next】
+		（2）选择webapp 1.0	【Next】
 		（3）填写GroupId、ArtifactId[项目名显示]、Version[保持默认]、Package[写Java代码的包名]。【Finish】
 	3）正常情况下，以上两种都不会使用 少目录，创建的时候会勾选Create a simple project（第一个复选框）
 		Maven的工程分类：
