@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/book")
 public class FirstController {
 
+	// 将配置文件中的信息复制给某个属性或对象
+	/*@Value("${server.context-path}")
+	public String contextPath;
+	@Value("${server.port}")
+	public String port;*/
+
 	@GetMapping("/msg")
 	@ResponseBody
 	public Map<String, String> getMsg() {

@@ -1,2 +1,13 @@
-server:
-  port: 7777
+################### DataSource Configuration ##########################
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://106.13.108.29:3306/mysql
+    username: root
+    password: 7758521
+    initialize: true
+    
+  mvc:
+    view:
+      prefix: /WEB-INF/
+      suffix: .jsp

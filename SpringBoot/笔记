@@ -180,20 +180,277 @@
 		如果配置文件中的配置信息相同，那么.properties配置文件的优先级要高！	
 	
 11.将配置文件的信息复制给@Controller类中的属性或对象：
+	1）不管在Controller、Service都可以使用配置文件信息：
+		// 将配置文件中的信息复制给某个属性或对象
+		@Value("${server.context-path}")
+		public String contextPath;
+		@Value("${server.port}")
+		public String port;
+	2）那样赋值如果多个类要使用的话，太麻烦，我们可以将配置文件信息封装在一个类中：
+		@Component
+		public class ConfigurationFile {
+			@Value("${server.context-path}")
+			public String contextPath;
+			@Value("${server.port}")
+		}
+		===先把配置文件对象放在Spring容器中，在需要的地方：
+			@Autowired
+			private ConfigurationFile configFile;
+	3）一个一个赋值还是麻烦，可以使用前缀取值：
+		@Component
+		@ConfigurationProperties(prefix="server")
+		public class ConfigurationFile {
+			@Value("${server.context-path}")
+			public String contextPath;
+			@Value("${server.port}")
+		}
+		注意：使用前缀首先必须把对象放入容器中才行。
+
+12.SpringBoot整合JDBC：
+	1）修改pom.xml增加jdbcTemple依赖库：
+		<!--Spring JDBC依赖支持 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<!-- Mysql数据库JDBC驱动 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.39</version>
+		</dependency>
+	2）创建测试数据库表：
+		create table demo(
+			 id bigint primary key ,
+			 name varchar(32)
+		);
+	3）配置数据库连接（yml）：
+		spring:
+		  datasource:
+		    driver-class-name: com.mysql.jdbc.Driver
+		    url: jdbc:mysql://106.13.108.29:3306/mysql
+		    username: root
+		    password: 7758521
+		    initialize: true
+	4）编写实体bean：
+		package com.wind.config.bean;
+		/**
+		 * 测试实体类.
+		 */
+		public class Demo {
+		    private long id;//主键.
+		    private String name;//测试名称.
+		}
+	5）编写DAO实现类：
+		package com.wind.config.dao;
+		import javax.annotation.Resource;
+		import org.springframework.jdbc.core.BeanPropertyRowMapper;
+		import org.springframework.jdbc.core.JdbcTemplate;
+		import org.springframework.jdbc.core.RowMapper;
+		import org.springframework.stereotype.Repository;
+		import com.wind.config.bean.Demo;
+		/**
+		 * 	使用JdbcTemplate操作数据库。
+			关键点：
+				1、@Repository注解，标示DAO类
+				2、@Resource注解引入JdbcTemplate对象。
+				3、框架引入：spring-boot-starter-jdbc依赖后，可以直接生成JdbcTemplate对象。
+		*/
+		@Repository
+		public class DemoDao {
+		    @Resource
+		    private JdbcTemplate jdbcTemplate;
+		    /**
+		 		通过id获取demo对象.
+		    */
+		    public Demo getById(long id){
+		       String sql = "select *from Demo where id=?";
+		       RowMapper<Demo> rowMapper = new BeanPropertyRowMapper<Demo>(Demo.class);
+		       return jdbcTemplate.queryForObject(sql, rowMapper,id);
+		    }
+		}
+	6）编写Service类：
+		package com.wind.config.service;
+		import javax.annotation.Resource;
+		import org.springframework.stereotype.Service;
+		import com.wind.config.bean.Demo;
+		import com.wind.config.dao.DemoDao;
+		/**
+		 * 	提供Demo服务类.
+			关键点：
+				1、@Service注解标示Service类。
+				2、@Resource注解，引入Dao对象。
+		 */
+		@Service
+		public class DemoService {
+		       @Resource
+		       private DemoDao demoDao;
+		       public Demo getById(long id){             
+		              return demoDao.getById(id);
+		       }
+		}
+	7）编写Controller类：
+		package com.wind.config.controller;
+		import javax.annotation.Resource;
+		import org.springframework.web.bind.annotation.RequestMapping;
+		import org.springframework.web.bind.annotation.RestController;
+		import com.wind.config.bean.Demo;
+		import com.wind.config.service.DemoService;
+		@RestController
+		@RequestMapping("/demo")
+		public class DemoController {
+		    @Resource
+		    private DemoService demoService;   
+		    /**
+		     * 测试查询方法.
+		     */
+		    //地址：http://127.0.0.1:8080/demo/getById?id=1234567
+		    @RequestMapping("/getById")
+		    public Demo getById(long id){
+		       return demoService.getById(id);
+		    }
+		}
+	8）编写测试启动类：
+		package com.wind.config;
+		import org.springframework.boot.SpringApplication;
+		import org.springframework.boot.autoconfigure.SpringBootApplication;
+		//其中@SpringBootApplication申明让spring boot自动给程序进行必要的配置，等价于以默认属性使用@Configuration，@EnableAutoConfiguration和@ComponentScan
+		@SpringBootApplication
+		public class DemoApp {
+			public static void main(String[] args) {
+				SpringApplication.run(DemoApp.class, args);
+			}
+		}
+	9）测试运行：
+		选择项目名称，点击右键选择Run as--Java Application
+		弹出的对话框中，选择，我们刚才编写的测试类：DemoApp
+
+13.SpringBoot整合MyBatis：
+	1）修改pom.xml导入MySQL和MyBatis依赖库：
+		<!--Spring MyBatis依赖支持 -->
+		<dependency>
+		    <groupId>org.mybatis.spring.boot</groupId>
+		    <artifactId>mybatis-spring-boot-starter</artifactId>
+		    <version>1.3.2</version>
+		</dependency>
+		<!-- MySQL数据库驱动 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.39</version>
+		</dependency>
+	2）创建测试数据库表（用测试JDBC的表）：
+		create table demo(
+			 id bigint primary key ,
+			 name varchar(32)
+		);
+	3）配置数据库连接（yml）（用测试JDBC）：
+		spring:
+		  datasource:
+		    driver-class-name: com.mysql.jdbc.Driver
+		    url: jdbc:mysql://106.13.108.29:3306/mysql
+		    username: root
+		    password: 7758521
+		    initialize: true
+	4）编写实体bean（用测试JDBC的类）：
+		package com.wind.config.bean;
+		/**
+		 * 测试实体类.
+		 */
+		public class Demo {
+		    private long id;//主键.
+		    private String name;//测试名称.
+		}
+	5）Dao层接口及映射文件：
+		接口：
+			package com.wind.config.dao;
+			import com.wind.config.bean.Demo;
+			public interface DemoDaoMyBatis {
+				public Demo getDemoById(Long id);
+			}
+		xml文件：
+			<?xml version="1.0" encoding="UTF-8" ?>
+			<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+			<mapper namespace="com.wind.config.dao.DemoDaoMyBatis">
+				<select id="getDemoById" resultType="com.wind.config.bean.Demo">
+					select id, name from demo where id = #{id}
+				</select>
+			</mapper>
+	6）Service：
+		package com.wind.config.service;
+		import javax.annotation.Resource;
+		import org.springframework.stereotype.Service;
+		import com.wind.config.bean.Demo;
+		import com.wind.config.dao.DemoDaoMyBatis;
+		/**
+		 * 	提供Demo服务类.
+			关键点：
+				1、@Service注解标示Service类。
+				2、@Resource注解，引入Dao对象。
+		 */
+		@Service
+		public class DemoServiceMyBatis {
+		       @Resource
+		       private DemoDaoMyBatis demoDaoMyBatis;
+		      
+		       public Demo getDemoById(long id){             
+		              return demoDaoMyBatis.getDemoById(id);
+		       }
+		}
+	7）Controller类：
+		package com.wind.config.controller;
+		import org.springframework.beans.factory.annotation.Autowired;
+		import org.springframework.web.bind.annotation.RequestMapping;
+		import org.springframework.web.bind.annotation.RestController;
+		import com.wind.config.bean.Demo;
+		import com.wind.config.service.DemoServiceMyBatis;
+		@RestController
+		@RequestMapping("/demoMyBatis")
+		public class DemoControllerMyBatis {
+		    @Autowired
+		    private DemoServiceMyBatis demoServiceMyBatis;   
+		    /**
+		     * 测试查询方法.
+		     */
+		    //地址：http://127.0.0.1:8080/demoMyBatis/getDemoById?id=1234567
+		    @RequestMapping("/getDemoById")
+		    public Demo getById(long id){
+		       return demoServiceMyBatis.getDemoById(id);
+		    }
+		}
+	8）编写测试启动类：
+		package com.wind.config;
+		import org.springframework.boot.SpringApplication;
+		import org.springframework.boot.autoconfigure.SpringBootApplication;
+		//其中@SpringBootApplication申明让spring boot自动给程序进行必要的配置，等价于以默认属性使用@Configuration，@EnableAutoConfiguration和@ComponentScan
+		@SpringBootApplication
+		public class DemoApp {
+			public static void main(String[] args) {
+				SpringApplication.run(DemoApp.class, args);
+			}
+		}
+	9）测试运行：
+		选择项目名称，点击右键选择Run as--Java Application
+		弹出的对话框中，选择，我们刚才编写的测试类：DemoApp
+
+14.SpringBoot整合事务：
+	1）在Service的类上加@Transactional(readOnly = true)注解。
+	2）在主配置类上加@EnableTransactionManagement	// 在主配置类上开启事务
+
+15.SpringBoot整合jsp：
+	启动主配置类，访问webapp目录下的index.jsp，浏览器会下载，我们要的不是下载 让显示在浏览器上。
+	解决需要添加jsp依赖：
+		<!-- 使用jsp引擎，springboot内置tomcat没有此依赖 -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>
+        </dependency>
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+16.SpringBoot整合jstl：
+	解决需要添加jstl依赖：
+        <!-- 添加jstl标签库依赖模块 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
